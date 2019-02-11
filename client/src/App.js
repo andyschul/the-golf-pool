@@ -14,6 +14,13 @@ class App extends Component {
       .then(res => this.setState({ response: res.express }))
       .catch(err => console.log(err));
   }
+  goTo(route) {
+    this.props.history.replace(`/${route}`)
+  }
+  login() {
+    this.props.auth.login();
+  }
+
   callApi = async () => {
     const response = await fetch(`${API_URL}/api/hello`);
     const body = await response.json();
@@ -33,6 +40,7 @@ class App extends Component {
     this.setState({ responseToPost: body });
   };
   render() {
+    const { isAuthenticated } = this.props.auth;
     return (
       <div className="App">
         <header className="App-header">
@@ -49,6 +57,30 @@ class App extends Component {
             Learn React
           </a>
         </header>
+        <button
+          id="qsLoginBtn"
+          bsStyle="primary"
+          className="btn-margin"
+          onClick={this.login.bind(this)}
+        >
+          Log In
+        </button>
+
+        {
+          !isAuthenticated() && (
+            <p>
+              <strong>Not auth</strong>
+            </p>
+            )
+        }
+        {
+          isAuthenticated() && (
+            <p>
+              <strong>Is auth</strong>
+            </p>
+            )
+        }
+
         <p>{this.state.response}</p>
         <form onSubmit={this.handleSubmit}>
           <p>
