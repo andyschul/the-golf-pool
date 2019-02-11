@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { API_URL } from './constants';
 
 class App extends Component {
   state = {
@@ -14,14 +15,14 @@ class App extends Component {
       .catch(err => console.log(err));
   }
   callApi = async () => {
-    const response = await fetch('/api/hello');
+    const response = await fetch(`${API_URL}/api/hello`);
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
   };
   handleSubmit = async e => {
     e.preventDefault();
-    const response = await fetch('/api/world', {
+    const response = await fetch(`${API_URL}/api/world`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
