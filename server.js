@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const redis = require('redis')
 const cors = require('cors');
 const path = require('path');
-const scheduler = require('./scheduler');
 const {promisify} = require('util');
 require('dotenv').config();
+require('./scheduler');
 
 const app = express();
 const port = process.env.PORT || 5000;
