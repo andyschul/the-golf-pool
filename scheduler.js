@@ -20,7 +20,6 @@ getAsync(`schedule:${currentYear}`).then(function(res) {
     let tourneySchedule;
     if (res) {
       tourneySchedule = JSON.parse(res);
-      console.log('redis')
     } else {
       tourneySchedule = await api.getYearlySchedule();
     }
@@ -31,11 +30,13 @@ getAsync(`schedule:${currentYear}`).then(function(res) {
 
     let now = new Date();
     for (let tourney of tourneySchedule.tournaments) {
-      if (new Date(tourney.start_date) > now) {
-        // TODO: create cron from tourney.start_date
-        let cron = '0 0 0 0 *';
+      let tourneyDate = new Date(`${tourney.start_date}T00:00:00`);
+      if (tourneyDate > now) {
+        // Create scheduler to run every 5 hours, starting 3 days prior to tournament
+        let startDay = new Date(tourneyDate.getTime());
+        startDay.setDate(startDay.getDate() - 3);
 
-        schedule.scheduleJob(cron, function(){
+        schedule.scheduleJob({ start: startDay, end: tourneyDate, rule: '0 */5 * * *' }, function(){
           let teeTimes = api.getTeeTimes(tourney.id);
           if (teeTimes.hasOwnPropery('pairings')) {
             this.cancel();
