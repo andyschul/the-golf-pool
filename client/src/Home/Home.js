@@ -63,6 +63,11 @@ class Home extends Component {
               </h4>
             )
         }
+        <button
+          onClick={this.ping.bind(this)}
+        >
+          Call API
+        </button>
         </Grid>
         {this.state.groups.map((group, index) => (
           <SimpleTable rows={group} tableIndex={index}/>
