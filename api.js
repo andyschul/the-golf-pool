@@ -4,6 +4,20 @@ const redis = require('redis')
 const client = redis.createClient(process.env.REDIS_URL);
 const CONTESTS = ["The Open Championship", "U.S. Open", "Masters Tournament", "PGA Championship", "THE PLAYERS Championship"];
 
+function groupPairings(pairings, groupNums) {
+  let groupedPairings = [];
+  let pLen = pairings.length;
+  let remainder = pLen % groupNums;
+  let ppg = pLen/groupNums;
+  let max = Math.ceil(ppg);
+  let min = Math.floor(ppg);
+
+  for (let i=0; i<groupNums; i++) {
+    let size = !remainder ? ppg : (i<remainder ? max : min)
+    groupedPairings.push(pairings.splice(0, size));
+  }
+  return groupedPairings;
+}
 
 function getYearlySchedule() {
   let currentYear = (new Date()).getFullYear();
@@ -25,16 +39,15 @@ function getYearlySchedule() {
     });
 }
 
-
 function getTeeTimes() {
   let currentYear = (new Date()).getFullYear();
   return axios.get(`${process.env.SPORTS_RADAR_URI}/teetimes/pga/${currentYear}/tournaments/${tourneyId}/rounds/1/teetimes.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
     .then(function (response) {
-      // TODO: create a list of lists for pairings
-      let pairings = response.data.round.courses[0].pairings
+      let pairings = response.data.round.courses[0].pairings;
+      let groups = groupPairings(pairings, 10);
 
-      client.set(`tournament:${tourneyId}:pairings`, JSON.stringify({pairings:pairings}));
-      return {pairings: pairings};
+      client.set(`tournament:${tourneyId}:groups`, JSON.stringify({groups:groups}));
+      return {groups: groups};
     })
     .catch(function (error) {
       console.log('error getTeeTimes', error);
