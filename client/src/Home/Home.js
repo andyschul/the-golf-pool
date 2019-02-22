@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import Grid from '@material-ui/core/Grid';
 
 class Home extends Component {
   render() {
     const { isAuthenticated, login } = this.props.auth;
     return (
-      <div className="container">
+      <Grid container spacing={24} style={{paddingTop: 70, paddingLeft: 5, paddingRight: 5, paddingBottom: 60}}>
+        <Grid item xs={12}>
         {
           isAuthenticated() && (
               <h4>
@@ -25,7 +27,8 @@ class Home extends Component {
               </h4>
             )
         }
-      </div>
+        </Grid>
+      </Grid>
     );
   }
 }

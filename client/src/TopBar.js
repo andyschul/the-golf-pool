@@ -32,7 +32,7 @@ class ButtonAppBar extends React.Component {
     const { isAuthenticated } = this.props.auth;
     return (
       <div className={this.props.classes.root}>
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Toolbar>
             <IconButton className={this.props.classes.menuButton} color="inherit" aria-label="Menu">
               <MenuIcon />

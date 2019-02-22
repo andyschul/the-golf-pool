@@ -8,6 +8,7 @@ import Profile from './Profile/Profile';
 import Callback from './Callback/Callback';
 import Auth from './Auth/Auth';
 import history from './history';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 const auth = new Auth();
 
@@ -19,17 +20,20 @@ const handleAuthentication = (nextState, replace) => {
 
 export const makeMainRoutes = () => {
   return (
-    <Router history={history} component={App}>
-      <div>
-        <Route path="/" render={(props) => <ButtonAppBar auth={auth} {...props} />} />
-        <Route path="/home" render={(props) => <Home auth={auth} {...props} />} />
-        <Route path="/profile" render={(props) => <Profile auth={auth} {...props} />} />
-        <Route path="/callback" render={(props) => {
-          handleAuthentication(props);
-          return <Callback {...props} />
-        }}/>
-        <Route path="/" render={(props) => <SimpleBottomNavigation auth={auth} {...props} />} />
-      </div>
-    </Router>
+    <React.Fragment>
+      <CssBaseline />
+      <Router history={history} component={App}>
+        <div>
+          <Route path="/" render={(props) => <ButtonAppBar auth={auth} {...props} />} />
+          <Route path="/home" render={(props) => <Home auth={auth} {...props} />} />
+          <Route path="/profile" render={(props) => <Profile auth={auth} {...props} />} />
+          <Route path="/callback" render={(props) => {
+            handleAuthentication(props);
+            return <Callback {...props} />
+          }}/>
+          <Route path="/" render={(props) => <SimpleBottomNavigation auth={auth} {...props} />} />
+        </div>
+      </Router>
+    </React.Fragment>
   );
 }
