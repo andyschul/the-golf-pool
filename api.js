@@ -46,7 +46,7 @@ function getTeeTimes() {
       let pairings = response.data.round.courses[0].pairings;
       let groups = groupPairings(pairings, 10);
 
-      client.set(`tournament:${tourneyId}:groups`, JSON.stringify({groups:groups}));
+      client.set(`tournaments:${tourneyId}:groups`, JSON.stringify({groups:groups}));
       return {groups: groups};
     })
     .catch(function (error) {

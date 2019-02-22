@@ -1,7 +1,41 @@
 import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
+import { API_URL } from '../constants';
+import axios from 'axios';
+import SimpleTable from './Table'
+
+
+
 
 class Home extends Component {
+  state = {
+    isMounted: false,
+    groups: []
+  }
+  componentDidMount() {
+      this.setState({isMounted: true})
+  }
+  componentWillUnmount(){
+      this.state.isMounted = false
+  }
+  ping() {
+    axios.get(`${API_URL}/api/groupings`)
+      .then((response) => {
+        this.setState({
+          groups: response.data.groups
+        });
+      })
+      .catch(function (error) {
+        alert('There was an error submitting settings.');
+      });
+  }
+  callApi = async () => {
+    const response = await fetch(`${API_URL}/api/groupings`);
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  };
+
   render() {
     const { isAuthenticated, login } = this.props.auth;
     return (
@@ -9,9 +43,11 @@ class Home extends Component {
         <Grid item xs={12}>
         {
           isAuthenticated() && (
-              <h4>
-                You are logged in!
-              </h4>
+              <button
+                onClick={this.ping.bind(this)}
+              >
+                Call API
+              </button>
             )
         }
         {
@@ -28,6 +64,10 @@ class Home extends Component {
             )
         }
         </Grid>
+        {this.state.groups.map((group, index) => (
+          <SimpleTable rows={group} tableIndex={index}/>
+        ))}
+
       </Grid>
     );
   }

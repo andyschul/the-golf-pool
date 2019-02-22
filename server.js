@@ -34,6 +34,15 @@ app.post('/api/world', (req, res) => {
   );
 });
 
+app.get('/api/groupings', async (req, res, next) => {
+  try {
+    let groups = await getAsync(`tournaments:b404a8d5-5e33-4417-ae20-5d4d147042ee:groups`);
+    res.json(JSON.parse(groups));
+  } catch (e) {
+    next(e)
+  }
+});
+
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
   app.use(express.static(path.join(__dirname, 'client/build')));
