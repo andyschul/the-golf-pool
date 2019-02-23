@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import { makeMainRoutes } from './routes';
-if (process.env.NODE_ENV !== 'production') require('dotenv').config({path: '../.env'});
+require('dotenv').config({path: '../.env', silent: process.env.NODE_ENV === 'production'});
 console.log(process)
 
 const routes = makeMainRoutes();

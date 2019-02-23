@@ -4,7 +4,7 @@ const redis = require('redis')
 const cors = require('cors');
 const path = require('path');
 const {promisify} = require('util');
-require('dotenv').config();
+require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 require('./scheduler');
 
 const app = express();
