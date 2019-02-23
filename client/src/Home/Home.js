@@ -13,7 +13,7 @@ class Home extends Component {
       this.setState({isMounted: true})
   }
   componentWillUnmount(){
-      this.state.isMounted = false
+      this.setState({isMounted: false})
   }
   ping() {
     axios.get(`${process.env.REACT_APP_API_URL}/api/groupings`)
@@ -34,37 +34,32 @@ class Home extends Component {
   };
 
   render() {
-    const { isAuthenticated, login } = this.props.auth;
+    const { isAuthenticated } = this.props.auth;
     return (
       <Grid container spacing={24} style={{paddingTop: 70, paddingLeft: 5, paddingRight: 5, paddingBottom: 60}}>
         <Grid item xs={12}>
         {
           isAuthenticated() && (
+            <div>
               <button
                 onClick={this.ping.bind(this)}
               >
                 Call API
               </button>
+              {this.state.groups.map((group, index) => (
+                <SimpleTable key={index} rows={group} tableIndex={index}/>
+              ))}
+            </div>
             )
         }
         {
           !isAuthenticated() && (
               <h4>
-                You are not logged in! Please{' '}
-                <a style={{cursor:'pointer'}}
-                  onClick={login.bind(this)}
-                >
-                  Log In
-                </a>
-                {' '}to continue.
+                You are not logged in! Please Log In to continue.
               </h4>
             )
         }
         </Grid>
-        {this.state.groups.map((group, index) => (
-          <SimpleTable rows={group} tableIndex={index}/>
-        ))}
-
       </Grid>
     );
   }

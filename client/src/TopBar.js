@@ -32,13 +32,13 @@ class ButtonAppBar extends React.Component {
     const { isAuthenticated } = this.props.auth;
     return (
       <div className={this.props.classes.root}>
-        <AppBar position="fixed">
+        <AppBar position="fixed" color="default">
           <Toolbar>
             <IconButton className={this.props.classes.menuButton} color="inherit" aria-label="Menu">
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" className={this.props.classes.grow}>
-              {this.props.location.pathname}
+
             </Typography>
             {
               !isAuthenticated() && (
