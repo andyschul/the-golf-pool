@@ -19,7 +19,7 @@ class Home extends Component {
       this.state.isMounted = false
   }
   ping() {
-    axios.get(`${API_URL}/api/groupings`)
+    axios.get(`/api/groupings`)
       .then((response) => {
         this.setState({
           groups: response.data.groups
@@ -30,7 +30,7 @@ class Home extends Component {
       });
   }
   callApi = async () => {
-    const response = await fetch(`${API_URL}/api/groupings`);
+    const response = await fetch(`/api/groupings`);
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
