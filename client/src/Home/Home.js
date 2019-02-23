@@ -5,8 +5,6 @@ import axios from 'axios';
 import SimpleTable from './Table'
 
 
-
-
 class Home extends Component {
   state = {
     isMounted: false,
@@ -19,7 +17,7 @@ class Home extends Component {
       this.state.isMounted = false
   }
   ping() {
-    axios.get(`/api/groupings`)
+    axios.get(`${process.env.REACT_APP_API_URL}/api/groupings`)
       .then((response) => {
         this.setState({
           groups: response.data.groups
@@ -30,7 +28,7 @@ class Home extends Component {
       });
   }
   callApi = async () => {
-    const response = await fetch(`/api/groupings`);
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/groupings`);
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
@@ -66,7 +64,7 @@ class Home extends Component {
         <button
           onClick={this.ping.bind(this)}
         >
-          Call API
+          Call API {process.env.REACT_APP_API_URL}
         </button>
         </Grid>
         {this.state.groups.map((group, index) => (

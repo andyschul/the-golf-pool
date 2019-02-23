@@ -2,6 +2,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import { makeMainRoutes } from './routes';
+require('dotenv').config({path: '../.env'});
+console.log(process)
 
 const routes = makeMainRoutes();
 
