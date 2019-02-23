@@ -28,5 +28,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "https://started-from-a-golf-pool.herokuapp.com:5000"
+  "proxy": "http://started-from-a-golf-pool.herokuapp.com:5000"
 }
