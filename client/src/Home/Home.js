@@ -64,7 +64,7 @@ class Home extends Component {
         <button
           onClick={this.ping.bind(this)}
         >
-          Call API {process.env.REACT_APP_API_URL}
+          Call API - {process.env.REACT_APP_API_URL}
         </button>
         </Grid>
         {this.state.groups.map((group, index) => (
