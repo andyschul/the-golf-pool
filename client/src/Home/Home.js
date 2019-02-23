@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { API_URL } from '../constants';
 import axios from 'axios';
 import SimpleTable from './Table'
-
-
 
 
 class Home extends Component {
@@ -19,7 +16,7 @@ class Home extends Component {
       this.state.isMounted = false
   }
   ping() {
-    axios.get(`${API_URL}/api/groupings`)
+    axios.get(`${process.env.REACT_APP_API_URL}/api/groupings`)
       .then((response) => {
         this.setState({
           groups: response.data.groups
@@ -30,7 +27,7 @@ class Home extends Component {
       });
   }
   callApi = async () => {
-    const response = await fetch(`${API_URL}/api/groupings`);
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/groupings`);
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;

@@ -1,5 +1,4 @@
 import auth0 from 'auth0-js';
-import { AUTH_CONFIG } from './auth0-variables';
 import history from '../history';
 
 export default class Auth {
@@ -11,10 +10,10 @@ export default class Auth {
   requestedScopes = 'openid profile read:messages write:messages';
 
   auth0 = new auth0.WebAuth({
-    domain: AUTH_CONFIG.domain,
-    clientID: AUTH_CONFIG.clientId,
-    redirectUri: AUTH_CONFIG.callbackUrl,
-    audience: AUTH_CONFIG.apiUrl,
+    domain: process.env.REACT_APP_AUTH0_DOMAIN,
+    clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
+    redirectUri: process.env.REACT_APP_AUTH0_CALLBACK_URL,
+    audience: process.env.REACT_APP_AUTH0_API_URL,
     responseType: 'token id_token',
     scope: this.requestedScopes
   });
