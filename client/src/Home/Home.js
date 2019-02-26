@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
 import SimpleTable from './Table'
+import SelectedListItem from './List'
 
 
 class Home extends Component {
@@ -41,14 +42,7 @@ class Home extends Component {
         {
           isAuthenticated() && (
             <div>
-              <button
-                onClick={this.ping.bind(this)}
-              >
-                Call API
-              </button>
-              {this.state.groups.map((group, index) => (
-                <SimpleTable key={index} rows={group} tableIndex={index}/>
-              ))}
+              You are logged in!
             </div>
             )
         }
@@ -59,6 +53,16 @@ class Home extends Component {
               </h4>
             )
         }
+        <div>
+          <button
+            onClick={this.ping.bind(this)}
+          >
+            Call API
+          </button>
+          {this.state.groups.map((group, index) => (
+            <SelectedListItem key={index} rows={group} tableIndex={index}/>
+          ))}
+        </div>
         </Grid>
       </Grid>
     );

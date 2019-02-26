@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Router } from 'react-router-dom';
 import App from './App';
 import ButtonAppBar from './TopBar';
-import SimpleBottomNavigation from './BottomNav';
 import Home from './Home/Home';
 import Profile from './Profile/Profile';
 import Callback from './Callback/Callback';
@@ -31,7 +30,6 @@ export const makeMainRoutes = () => {
             handleAuthentication(props);
             return <Callback {...props} />
           }}/>
-          <Route path="/" render={(props) => <SimpleBottomNavigation auth={auth} {...props} />} />
         </div>
       </Router>
     </React.Fragment>
