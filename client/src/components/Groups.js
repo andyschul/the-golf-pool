@@ -1,11 +1,7 @@
-import PropTypes from 'prop-types'
-import Player from './Player'
+import PlayerList from './PlayerList'
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { playersFetchData } from '../actions';
-import { selectPlayer } from '../actions';
-
-
+import { groupsFetchData } from '../actions';
 
 
 class Groups extends Component {
@@ -21,11 +17,11 @@ class Groups extends Component {
       return <p>Loading…</p>;
     }
     return (
-      <ul>
+      <div>
         {groups.map((group, index) => (
-          <PlayerList key={index} {...group} />
+          <PlayerList key={index} groupIndex={index} players={group} />
         ))}
-      </ul>
+      </div>
     );
   }
 }
@@ -39,7 +35,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchData: (url) => dispatch(playersFetchData(url))
+        fetchData: (url) => dispatch(groupsFetchData(url))
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Groups);

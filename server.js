@@ -39,7 +39,7 @@ app.get('/api/groupings', async (req, res, next) => {
   try {
     let groups = await getAsync(`tournaments:b404a8d5-5e33-4417-ae20-5d4d147042ee:groups`);
     groups = JSON.parse(groups)
-    res.json(groups['groups'][0]);
+    res.json(groups['groups']);
   } catch (e) {
     next(e)
   }

@@ -20,9 +20,10 @@ export const togglePlayer = id => ({
   id
 })
 
-export const selectPlayer = id => ({
+export const selectPlayer = (id, groupIndex) => ({
   type: 'SELECT_PLAYER',
-  id
+  id,
+  groupIndex
 })
 
 export const VisibilityFilters = {
@@ -31,38 +32,38 @@ export const VisibilityFilters = {
   SHOW_ACTIVE: 'SHOW_ACTIVE'
 }
 
-export function playersHasErrored(bool) {
+export function groupsHasErrored(bool) {
     return {
-        type: 'PLAYERS_HAS_ERRORED',
+        type: 'GROUPS_HAS_ERRORED',
         hasErrored: bool
     };
 }
-export function playersIsLoading(bool) {
+export function groupsIsLoading(bool) {
     return {
-        type: 'PLAYERS_IS_LOADING',
+        type: 'GROUPS_IS_LOADING',
         isLoading: bool
     };
 }
-export function playersFetchDataSuccess(players) {
+export function groupsFetchDataSuccess(groups) {
     return {
-        type: 'PLAYERS_FETCH_DATA_SUCCESS',
-        players
+        type: 'GROUPS_FETCH_DATA_SUCCESS',
+        groups
     };
 }
 
-export function playersFetchData(url) {
+export function groupsFetchData(url) {
     return (dispatch) => {
-        dispatch(playersIsLoading(true));
+        dispatch(groupsIsLoading(true));
         fetch(url)
             .then((response) => {
                 if (!response.ok) {
                     throw Error(response.statusText);
                 }
-                dispatch(playersIsLoading(false));
+                dispatch(groupsIsLoading(false));
                 return response;
             })
             .then((response) => response.json())
-            .then((players) => dispatch(playersFetchDataSuccess(players)))
-            .catch(() => dispatch(playersHasErrored(true)));
+            .then((groups) => dispatch(groupsFetchDataSuccess(groups)))
+            .catch(() => dispatch(groupsHasErrored(true)));
     };
 }
