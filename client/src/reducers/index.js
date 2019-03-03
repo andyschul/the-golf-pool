@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux'
-import players from './players'
+import { players, playersHasErrored, playersIsLoading } from './players';
 import todos from './todos'
 import visibilityFilter from './visibilityFilter'
 
 export default combineReducers({
-  players,
+  players, playersHasErrored, playersIsLoading,
   todos,
   visibilityFilter
 })

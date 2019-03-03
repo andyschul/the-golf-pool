@@ -8,12 +8,12 @@ import { selectPlayer } from '../actions';
 
 
 
-class PlayerList extends Component {
+class Groups extends Component {
   componentDidMount() {
     this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/groupings`);
   }
   render() {
-    const { players, selectPlayer } = this.props
+    const { groups } = this.props
     if (this.props.hasErrored) {
       return <p>Sorry! There was an error loading the items</p>;
     }
@@ -22,8 +22,8 @@ class PlayerList extends Component {
     }
     return (
       <ul>
-        {players.map(player => (
-          <Player key={player.id} {...player} onClick={() => selectPlayer(player.id)} />
+        {groups.map((group, index) => (
+          <PlayerList key={index} {...group} />
         ))}
       </ul>
     );
@@ -32,15 +32,14 @@ class PlayerList extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        players: state.players,
-        hasErrored: state.playersHasErrored,
-        isLoading: state.playersIsLoading
+        groups: state.groups,
+        hasErrored: state.groupdsHasErrored,
+        isLoading: state.groupdsIsLoading
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchData: (url) => dispatch(playersFetchData(url)),
-        selectPlayer: id => dispatch(selectPlayer(id))
+        fetchData: (url) => dispatch(playersFetchData(url))
     };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(PlayerList);
+export default connect(mapStateToProps, mapDispatchToProps)(Groups);

@@ -1,21 +1,16 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
-import { createStore, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk';
-import rootReducer from './reducers'
+
+import configureStore from './store/configureStore';
 // import App from './components/App'
 
 import ReactDOM from 'react-dom';
-import './index.css';
 import { makeMainRoutes } from './routes';
 require('dotenv').config({path: '../.env', silent: process.env.NODE_ENV === 'production'});
 
 const routes = makeMainRoutes();
-const store = createStore(
-  rootReducer,
-  applyMiddleware(thunk)
-);
+const store = configureStore();
 
 render(
   <Provider store={store}>
