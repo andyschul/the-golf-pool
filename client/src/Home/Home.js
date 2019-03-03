@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
-import SimpleTable from './Table'
 import SelectedListItem from './List'
 
 
@@ -17,6 +16,7 @@ class Home extends Component {
       this.setState({isMounted: false})
   }
   ping() {
+    console.log(`${process.env.REACT_APP_API_URL}/api/groupings`)
     axios.get(`${process.env.REACT_APP_API_URL}/api/groupings`)
       .then((response) => {
         this.setState({
@@ -27,6 +27,11 @@ class Home extends Component {
         alert('There was an error submitting settings.');
       });
   }
+
+  onGroupClick() {
+    console.log('clicked');
+  }
+
   callApi = async () => {
     const response = await fetch(`${process.env.REACT_APP_API_URL}/api/groupings`);
     const body = await response.json();
@@ -60,7 +65,7 @@ class Home extends Component {
             Call API
           </button>
           {this.state.groups.map((group, index) => (
-            <SelectedListItem key={index} rows={group} tableIndex={index}/>
+            <SelectedListItem key={index} {...group} onClick={() => this.onGroupClick(index)}/>
           ))}
         </div>
         </Grid>

@@ -6,6 +6,7 @@ const path = require('path');
 const {promisify} = require('util');
 require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 require('./scheduler');
+require('./test');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.post('/api/world', (req, res) => {
 app.get('/api/groupings', async (req, res, next) => {
   try {
     let groups = await getAsync(`tournaments:b404a8d5-5e33-4417-ae20-5d4d147042ee:groups`);
+    console.log(groups)
     res.json(JSON.parse(groups));
   } catch (e) {
     next(e)

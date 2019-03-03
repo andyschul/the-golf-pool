@@ -17,41 +17,21 @@ const styles = theme => ({
 });
 
 class SelectedListItem extends React.Component {
-  state = {
-    selectedIndex: 1,
-  };
-
-  handleListItemClick = (event, index, id) => {
-    console.log(this.props.rows[index])
-    this.setState({ selectedIndex: index });
-  };
-
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
-
         <List component="nav">
           <ListItem>
             <ListItemText primary="Group" />
           </ListItem>
-              {this.props.rows.map((row, rowIdx) => (
-                <div>
-                {row.players.map((player, idx) => (
-
-                  <ListItem key={player.id}
-                    button
-                    selected={this.state.selectedIndex === idx}
-                    onClick={event => this.handleListItemClick(event, rowIdx, player.id)}
-                  >
-                    <ListItemText primary={new Date(row.tee_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' - ' + player.first_name + ' ' + player.last_name + ' (' + player.country + ')'} />
-                  </ListItem>
-                ))}
-                </div>
-              ))}
+          {this.props.rows.map((player, rowIdx) => (
+            <ListItem button key={player.id}>
+              <ListItemText primary={new Date(player.tee_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' - ' + player.first_name + ' ' + player.last_name + ' (' + player.country + ')'} />
+            </ListItem>
+          ))}
         </List>
-
       </div>
     );
   }
