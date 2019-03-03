@@ -1,29 +1,11 @@
 import React from 'react'
-import Footer from './Footer'
-import PlayerList from './PlayerList'
-import AddTodo from '../containers/AddTodo'
-import VisibleTodoList from '../containers/VisibleTodoList'
-import VisiblePlayerList from '../containers/VisiblePlayerList'
+import TourneyGrouping from '../components/TourneyGrouping'
+import Grid from '@material-ui/core/Grid';
 
 const App = () => (
-  <div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <div>test</div>
-    <AddTodo />
-    <VisibleTodoList />
-
-    <PlayerList />
-
-    <Footer />
-  </div>
+  <Grid container spacing={24} style={{paddingTop: 70, paddingLeft: 5, paddingRight: 5, paddingBottom: 60}}>
+    <TourneyGrouping />
+  </Grid>
 )
 
 export default App

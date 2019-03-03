@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { groupsFetchData } from '../actions';
 
 
-class Groups extends Component {
+class TourneyGrouping extends Component {
   componentDidMount() {
     this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/groupings`);
   }
@@ -33,9 +33,11 @@ const mapStateToProps = (state) => {
         isLoading: state.groupdsIsLoading
     };
 };
+
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchData: (url) => dispatch(groupsFetchData(url))
     };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Groups);
+
+export default connect(mapStateToProps, mapDispatchToProps)(TourneyGrouping);

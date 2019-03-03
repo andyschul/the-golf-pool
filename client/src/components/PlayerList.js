@@ -3,11 +3,21 @@ import Player from './Player'
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { selectPlayer } from '../actions';
+import { withStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
+const styles = theme => ({
+  root: {
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+  },
+});
 
 class PlayerList extends Component {
   render() {
-    const { players, groupIndex, selectPlayer } = this.props
+    const { classes, players, groupIndex, selectPlayer } = this.props
     if (this.props.hasErrored) {
       return <p>Sorry! There was an error loading the items</p>;
     }
@@ -15,11 +25,16 @@ class PlayerList extends Component {
       return <p>Loading…</p>;
     }
     return (
-      <ul>
-        {players.map(player => (
-          <Player key={player.id} {...player} onClick={() => selectPlayer(player.id, groupIndex)} />
-        ))}
-      </ul>
+      <div className={classes.root}>
+        <List component="nav">
+          <ListItem>
+            <ListItemText primary="Group" />
+          </ListItem>
+          {players.map(player => (
+            <Player key={player.id} {...player} onClick={() => selectPlayer(player.id, groupIndex)} />
+          ))}
+        </List>
+      </div>
     );
   }
 }
@@ -29,4 +44,4 @@ const mapDispatchToProps = (dispatch) => {
         selectPlayer: (id, groupIndex) => dispatch(selectPlayer(id, groupIndex))
     };
 };
-export default connect(null, mapDispatchToProps)(PlayerList);
+export default connect(null, mapDispatchToProps)(withStyles(styles)(PlayerList));
