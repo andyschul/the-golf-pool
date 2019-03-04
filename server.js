@@ -6,7 +6,6 @@ const path = require('path');
 const {promisify} = require('util');
 require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 require('./scheduler');
-require('./test');
 
 const app = express();
 const port = process.env.PORT || 5000;

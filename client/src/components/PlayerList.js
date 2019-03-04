@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import Player from './Player'
 import React, { Component } from 'react';
 import { connect } from 'react-redux';

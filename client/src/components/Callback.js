@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
-import loading from './loading.svg';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/core/styles';
+const styles = theme => ({
+  progress: {
+    margin: theme.spacing.unit * 2,
+    marginTop: 300,
+  },
+});
 
 class Callback extends Component {
+
   render() {
     const style = {
       position: 'absolute',
@@ -15,13 +23,13 @@ class Callback extends Component {
       right: 0,
       backgroundColor: 'white',
     }
-
+    const { classes } = this.props;
     return (
       <div style={style}>
-        <img src={loading} alt="loading"/>
+        <CircularProgress className={classes.progress} />
       </div>
     );
   }
 }
 
-export default Callback;
+export default withStyles(styles)(Callback);

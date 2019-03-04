@@ -6,6 +6,7 @@ export function groupsHasErrored(state = false, action) {
             return state;
     }
 }
+
 export function groupsIsLoading(state = false, action) {
     switch (action.type) {
         case 'GROUPS_IS_LOADING':
