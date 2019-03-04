@@ -9,6 +9,7 @@ require('./scheduler');
 
 const app = express();
 const port = process.env.PORT || 5000;
+const User = require('./models/user');
 const client = redis.createClient(process.env.REDIS_URL);
 const getAsync = promisify(client.get).bind(client);
 const majors = ["The Open Championship", "U.S. Open", "Masters Tournament", "PGA Championship", "THE PLAYERS Championship"];
@@ -39,6 +40,58 @@ app.get('/api/groupings', async (req, res, next) => {
     let groups = await getAsync(`tournaments:b404a8d5-5e33-4417-ae20-5d4d147042ee:groups`);
     groups = JSON.parse(groups)
     res.json(groups['groups']);
+  } catch (e) {
+    next(e)
+  }
+});
+
+app.get('/api/tournaments/:tournyId/groups', async (req, res, next) => {
+  try {
+    let groups = await getAsync(`tournaments:${req.param('tournyId')}:groups`);
+    groups = JSON.parse(groups)
+    res.json(groups['groups']);
+  } catch (e) {
+    next(e)
+  }
+});
+
+app.get('/api/users/:userId', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.param('userId') });
+    console.log(user)
+    res.json({msg: 'ok'});
+  } catch (e) {
+    next(e)
+  }
+});
+
+app.put('/api/users/:userId/tournaments/:tournyId/picks', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.param('userId') });
+
+    user.tournaments = [{tournament_id: req.param('tournyId'), picks: req.body['picks']}]
+
+    user.save()
+    res.json({tournaments: user.tournaments});
+  } catch (e) {
+    next(e)
+  }
+});
+
+app.get('/api/users/:userId/tournaments/:tournyId/picks', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.param('userId') });
+    let userTournyData = user.tournaments.filter(t => t.tournament_id === req.param('tournyId'))[0];
+    if (req.query['full']) {
+      let groups = await getAsync(`tournaments:${req.param('tournyId')}:groups`);
+      groups = JSON.parse(groups);
+      let playerIds = userTournyData['picks'].map(x => x.id);
+
+      let retJson = groups['groups'].map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, selected: true } : { ...player, selected: false }));
+      res.json(retJson);
+    } else {
+      res.json(userTournyData);
+    }
   } catch (e) {
     next(e)
   }
