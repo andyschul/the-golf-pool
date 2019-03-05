@@ -7,7 +7,8 @@ import { groupsFetchData } from '../actions';
 
 class TourneyGrouping extends Component {
   componentDidMount() {
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/b404a8d5-5e33-4417-ae20-5d4d147042ee/picks?full=true`);
+    console.log('getting data')
+    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.tournament}/picks?full=true`);
   }
 
   componentDidUpdate() {

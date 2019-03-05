@@ -18,7 +18,7 @@ const Player = ({ onClick, selected, tee_time, first_name, last_name, country })
 Player.propTypes = {
   onClick: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
-  text: PropTypes.string.isRequired
+  first_name: PropTypes.string.isRequired
 }
 
 export default Player
