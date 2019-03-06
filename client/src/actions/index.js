@@ -92,3 +92,8 @@ export function scheduleFetchData(url) {
             .catch(() => dispatch(scheduleHasErrored(true)));
     };
 }
+
+export const auth = (profile) => ({
+  type: 'SET_AUTH',
+  profile
+})

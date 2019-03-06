@@ -1,5 +1,7 @@
 import auth0 from 'auth0-js';
 import history from '../history';
+import store from '../store/configureStore'
+import { auth } from '../actions';
 
 export default class Auth {
   accessToken;
@@ -67,6 +69,8 @@ export default class Auth {
     // Set the users scopes
     this.scopes = authResult.scope || this.requestedScopes || '';
 
+    store.dispatch(auth({...authResult.idTokenPayload, id: authResult.idTokenPayload['sub'].split('|')[1]}))
+
     // navigate to the home route
     history.replace('/home');
   }
@@ -107,6 +111,7 @@ export default class Auth {
     // Remove isLoggedIn flag from localStorage
     localStorage.removeItem('isLoggedIn');
 
+    store.dispatch(auth({}))
     // navigate to the home route
     history.replace('/home');
   }

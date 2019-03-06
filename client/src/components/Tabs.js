@@ -34,27 +34,32 @@ const styles = theme => ({
 });
 
 class NavTabs extends React.Component {
+  state = {
+    value: 0,
+  };
+
   componentDidMount() {
     this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/schedule/${new Date().getFullYear()}`);
   }
 
   handleChange = (event, value) => {
-    console.log(value)
+    this.setState({ value });
   };
+
 
   render() {
     const { classes, schedule } = this.props;
-    let value = schedule.length ? schedule[3].id : null;
+    const { value } = this.state;
 
     return (
       <NoSsr>
         <div className={classes.root}>
           <AppBar position="static">
             <Tabs variant="fullWidth" value={value} onChange={this.handleChange}>
-              {schedule.map(t => <LinkTab key={t.id} value={t.id} label={t.name} href={t.name} /> )}
+              {schedule.map(t => <LinkTab key={t.id} label={t.name} href={t.name} /> )}
             </Tabs>
           </AppBar>
-          {schedule.map((t, idx) => (value === t.id && <TabContainer key={t.id}><TourneyGrouping tournament={t.id} /></TabContainer>) )}
+          {schedule.map((t, idx) => (value === idx && <TabContainer key={t.id}><TourneyGrouping tournament={t.id} /></TabContainer>) )}
         </div>
       </NoSsr>
     );
