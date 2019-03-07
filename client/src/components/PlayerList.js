@@ -17,18 +17,9 @@ const styles = theme => ({
 class PlayerList extends Component {
   render() {
     const { classes, players, groupIndex, selectPlayer } = this.props
-    if (this.props.hasErrored) {
-      return <p>Sorry! There was an error loading the items</p>;
-    }
-    if (this.props.isLoading) {
-      return <p>Loading…</p>;
-    }
     return (
       <div className={classes.root}>
         <List component="nav">
-          <ListItem>
-            <ListItemText primary="Group" />
-          </ListItem>
           {players.map(player => (
             <Player key={player.id} {...player} onClick={() => selectPlayer(player.id, groupIndex)} />
           ))}

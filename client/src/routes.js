@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Router } from 'react-router-dom';
 import App from './components/App';
+import TournamentGroupings from './components/TournamentGroupings';
 import ButtonAppBar from './components/TopBar';
 import Callback from './components/Callback';
 import Auth from './Auth/Auth';
@@ -17,18 +18,16 @@ const handleAuthentication = (nextState, replace) => {
 
 export const makeMainRoutes = () => {
   return (
-    <React.Fragment>
-      <CssBaseline />
-      <Router history={history} component={App}>
-        <div>
-          <Route path="/" render={(props) => <ButtonAppBar auth={auth} {...props} />} />
-          <Route path="/home" render={(props) => <App auth={auth} {...props} />} />
-          <Route path="/callback" render={(props) => {
-            handleAuthentication(props);
-            return <Callback {...props} />
-          }}/>
-        </div>
-      </Router>
-    </React.Fragment>
+    <Router history={history} component={App}>
+      <div>
+        <Route path="/" render={(props) => <ButtonAppBar auth={auth} {...props} />} />
+        <Route path="/home" render={(props) => <App auth={auth} {...props} />} />
+        <Route path="/test" render={(props) => <TournamentGroupings auth={auth} {...props} />} />
+        <Route path="/callback" render={(props) => {
+          handleAuthentication(props);
+          return <Callback {...props} />
+        }}/>
+      </div>
+    </Router>
   );
 }
