@@ -1,20 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
+import { groupsFetchData } from '../actions';
 
 const styles = {
   root: {
@@ -29,20 +32,13 @@ const styles = {
   },
 };
 
-class ButtonAppBar extends React.Component {
+class MainBar extends React.Component {
   state = {
     left: false,
   };
 
-  login() {
-    this.props.auth.login();
-  }
-  logout() {
-    this.props.auth.logout();
-  }
-
   goTo = (route) => {
-    this.props.history.replace(`/${route}`)
+    this.props.history.replace(`/tournaments/${route}`);
   }
 
   toggleDrawer = (side, open) => () => {
@@ -52,8 +48,7 @@ class ButtonAppBar extends React.Component {
   };
 
   render() {
-    const { isAuthenticated } = this.props.auth;
-    const { classes } = this.props;
+    const { classes, schedule } = this.props;
 
     const sideList = (
       <div className={classes.list}>
@@ -67,7 +62,36 @@ class ButtonAppBar extends React.Component {
         </List>
         <Divider />
         <List>
-            <ListItem button onClick={this.logout.bind(this)}>
+          {schedule.map((tournament, index) => (
+            <ExpansionPanel key={tournament.id}>
+              <ExpansionPanelSummary>
+                <ListItem>
+                  <ListItemText primary={tournament.name} />
+                </ListItem>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+              <List>
+              <div
+                tabIndex={0}
+                role="button"
+                onClick={this.toggleDrawer('left', false)}
+              >
+                <ListItem button onClick={this.goTo.bind(this, `${tournament.id}/picks`)}>
+                  <ListItemText secondary={'Make Picks'} />
+                </ListItem>
+                <ListItem button onClick={this.goTo.bind(this, `${tournament.id}/results`)}>
+                  <ListItemText secondary={'Results'} />
+                </ListItem>
+              </div>
+              </List>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          ))}
+        </List>
+
+        <Divider />
+        <List>
+            <ListItem button>
               <ListItemText primary="Logout" />
             </ListItem>
         </List>
@@ -78,32 +102,17 @@ class ButtonAppBar extends React.Component {
       <div className={this.props.classes.root}>
         <AppBar position="fixed" color="default">
           <Toolbar>
-            {
-              isAuthenticated() && (
-                <IconButton onClick={this.toggleDrawer('left', true)} className={this.props.classes.menuButton} color="inherit" aria-label="Menu">
-                  <MenuIcon />
-                </IconButton>
-                )
-            }
+            <IconButton onClick={this.toggleDrawer('left', true)} className={this.props.classes.menuButton} color="inherit" aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
             <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)}>
               <div
                 tabIndex={0}
                 role="button"
-                onClick={this.toggleDrawer('left', false)}
-                onKeyDown={this.toggleDrawer('left', false)}
               >
                 {sideList}
               </div>
             </Drawer>
-
-            <Typography variant="h6" color="inherit" className={this.props.classes.grow}>
-
-            </Typography>
-            {
-              !isAuthenticated() && (
-                <Button color="inherit" onClick={this.login.bind(this)}>Login</Button>
-                )
-            }
           </Toolbar>
         </AppBar>
       </div>
@@ -111,8 +120,23 @@ class ButtonAppBar extends React.Component {
   }
 }
 
-ButtonAppBar.propTypes = {
+MainBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ButtonAppBar);
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth,
+    schedule: state.schedule,
+    hasErrored: state.scheduleHasErrored,
+    isLoading: state.scheduleIsLoading
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchData: (url) => dispatch(groupsFetchData(url))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(MainBar));

@@ -19,6 +19,9 @@ class PlayerList extends Component {
     const { classes, players, groupIndex, selectPlayer } = this.props
     return (
       <div className={classes.root}>
+        <ListItem>
+          <ListItemText primary={`Group ${groupIndex+1}`} />
+        </ListItem>
         <List component="nav">
           {players.map(player => (
             <Player key={player.id} {...player} onClick={() => selectPlayer(player.id, groupIndex)} />

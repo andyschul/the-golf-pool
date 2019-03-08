@@ -9,7 +9,6 @@ const styles = theme => ({
 });
 
 class Callback extends Component {
-
   render() {
     const style = {
       position: 'absolute',

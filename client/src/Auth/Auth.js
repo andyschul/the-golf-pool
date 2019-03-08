@@ -41,7 +41,7 @@ export default class Auth {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
       } else if (err) {
-        history.replace('/home');
+        history.replace('/');
         console.log(err);
         alert(`Error: ${err.error}. Check the console for further details.`);
       }
@@ -71,8 +71,8 @@ export default class Auth {
 
     store.dispatch(auth({...authResult.idTokenPayload, id: authResult.idTokenPayload['sub'].split('|')[1]}))
 
-    // navigate to the home route
-    history.replace('/home');
+    // navigate to the root route
+    history.replace('/');
   }
 
   renewSession() {
@@ -112,8 +112,8 @@ export default class Auth {
     localStorage.removeItem('isLoggedIn');
 
     store.dispatch(auth({}))
-    // navigate to the home route
-    history.replace('/home');
+    // navigate to the root route
+    history.replace('/');
   }
 
   isAuthenticated() {

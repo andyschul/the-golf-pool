@@ -5,13 +5,6 @@ import { groupsFetchData } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import PlayerList from './PlayerList'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
 
 const styles = theme => ({
   root: {
@@ -20,18 +13,15 @@ const styles = theme => ({
   },
 });
 
-function ListItemLink(props) {
-  return <ListItem button component="a" {...props} />;
-}
-
 class TournamentGroupings extends Component {
   componentDidMount() {
-    console.log('getting data')
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/b404a8d5-5e33-4417-ae20-5d4d147042ee/picks?full=true`);
+    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks?full=true`);
   }
 
-  componentDidUpdate() {
-    console.log('updated')
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks?full=true`);
+    }
   }
 
   savePicks(groups) {
@@ -43,7 +33,7 @@ class TournamentGroupings extends Component {
         }
       }
     }
-    axios.put(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/b404a8d5-5e33-4417-ae20-5d4d147042ee/picks`, {
+    axios.put(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks`, {
       picks: picks
     })
     .then(function (response) {
@@ -55,17 +45,11 @@ class TournamentGroupings extends Component {
   }
 
   cancelPicks() {
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/b404a8d5-5e33-4417-ae20-5d4d147042ee/picks?full=true`);
+    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks?full=true`);
   }
 
   render() {
-    const { classes, groups } = this.props;
-    if (this.props.hasErrored) {
-      return <p>Sorry! There was an error loading the items</p>;
-    }
-    if (this.props.isLoading) {
-      return <p>Loading…</p>;
-    }
+    const { groups } = this.props;
     return (
       <div>
         {groups.map((group, index) => (
@@ -81,18 +65,18 @@ TournamentGroupings.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-    return {
-        auth: state.auth,
-        groups: state.groups,
-        hasErrored: state.groupdsHasErrored,
-        isLoading: state.groupdsIsLoading
-    };
+  return {
+    auth: state.auth,
+    groups: state.groups,
+    hasErrored: state.groupdsHasErrored,
+    isLoading: state.groupdsIsLoading
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return {
-        fetchData: (url) => dispatch(groupsFetchData(url))
-    };
+  return {
+    fetchData: (url) => dispatch(groupsFetchData(url))
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TournamentGroupings));
