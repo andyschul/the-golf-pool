@@ -16,6 +16,14 @@ export function groupsIsLoading(bool) {
         isLoading: bool
     };
 }
+
+export function groupsCanSave(bool) {
+    return {
+        type: 'GROUPS_CAN_SAVE',
+        canSave: bool
+    };
+}
+
 export function groupsFetchDataSuccess(groups) {
     return {
         type: 'GROUPS_FETCH_DATA_SUCCESS',

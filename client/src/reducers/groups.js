@@ -26,3 +26,12 @@ export function groups(state = [], action) {
             return state;
     }
 }
+
+export function groupsCanSave(state = false, action) {
+    switch (action.type) {
+        case 'GROUPS_CAN_SAVE':
+            return action.canSave;
+        default:
+            return state;
+    }
+}

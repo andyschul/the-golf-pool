@@ -2,17 +2,31 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { groupsFetchData } from '../actions';
+import { groupsCanSave } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import Slide from '@material-ui/core/Slide';
+import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
 import PlayerList from './PlayerList'
 
 const styles = theme => ({
   root: {
     marginTop: theme.spacing.unit * 9,
+    marginBottom: theme.spacing.unit * 9,
   },
 });
 
+function TransitionUp(props) {
+  return <Slide {...props} direction="up" />;
+}
+
 class TournamentGroupings extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {open: false, text: ''};
+  }
+
   componentDidMount() {
     this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks?full=true`);
   }
@@ -25,35 +39,72 @@ class TournamentGroupings extends Component {
 
   savePicks(groups) {
     let picks = [];
-    for (let group of groups) {
+    for (let group of this.props.groups) {
       for (let player of group) {
         if (player.selected) {
           picks.push(player);
         }
       }
     }
+    let self = this;
     axios.put(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks`, {
       picks: picks
     })
     .then(function (response) {
-      console.log(response);
+      self.props.canSave(false);
+      self.setState({ open: true, text: 'Saved!' });
     })
     .catch(function (error) {
       console.log(error);
+      self.setState({ open: true, text: 'Your picks could not be saved' });
     });
   }
 
   cancelPicks() {
     this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/5c717a5ad6f7ed0006cc082b/tournaments/${this.props.match.params.id}/picks?full=true`);
+    this.props.canSave(false);
   }
 
+  handleClose = (event, reason) => {
+    this.setState({ open: false });
+  };
+
   render() {
-    const { classes, groups } = this.props;
+    const { classes, groups, groupsCanSave, handleClose } = this.props;
     return (
       <div className={classes.root}>
         {groups.map((group, index) => (
           <PlayerList key={index} groupIndex={index} players={group} />
         ))}
+
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          open={this.state.open}
+          autoHideDuration={2000}
+          onClose={this.handleClose}
+          message={<span id="message-id">{this.state.text}</span>}
+        />
+
+        <Snackbar
+          open={groupsCanSave}
+          TransitionComponent={this.TransitionUp}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={
+            <div>
+            <Button variant="contained" color="secondary" onClick={this.cancelPicks.bind(this)}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={this.savePicks.bind(this)}>
+              Save
+            </Button>
+            </div>
+          }
+        />
       </div>
     );
   }
@@ -68,13 +119,15 @@ const mapStateToProps = (state) => {
     auth: state.auth,
     groups: state.groups,
     hasErrored: state.groupdsHasErrored,
-    isLoading: state.groupdsIsLoading
+    isLoading: state.groupdsIsLoading,
+    groupsCanSave: state.groupsCanSave
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchData: (url) => dispatch(groupsFetchData(url))
+    fetchData: (url) => dispatch(groupsFetchData(url)),
+    canSave: (bool) => dispatch(groupsCanSave(bool))
   };
 };
 

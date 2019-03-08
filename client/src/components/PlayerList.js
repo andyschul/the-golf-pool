@@ -2,6 +2,7 @@ import Player from './Player'
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { selectPlayer } from '../actions';
+import { groupsCanSave } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -20,7 +21,7 @@ const styles = theme => ({
 class PlayerList extends Component {
   constructor(props) {
     super(props);
-    this.state = {locked: true};
+    this.state = {locked: false};
   }
 
   componentDidMount() {
@@ -36,9 +37,10 @@ class PlayerList extends Component {
   }
 
   tick() {
-    this.setState({
-      locked: new Date(this.props.players[0].tee_time) < new Date()
-    });
+    console.log('sdf')
+    // this.setState({
+    //   locked: new Date(this.props.players[0].tee_time) < new Date()
+    // });
   }
 
   render() {
@@ -62,7 +64,10 @@ class PlayerList extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        selectPlayer: (id, groupIndex) => dispatch(selectPlayer(id, groupIndex))
+        selectPlayer: (id, groupIndex) => (
+          dispatch(selectPlayer(id, groupIndex)),
+          dispatch(groupsCanSave(true))
+        )
     };
 };
 export default connect(null, mapDispatchToProps)(withStyles(styles)(PlayerList));
