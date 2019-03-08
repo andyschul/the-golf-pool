@@ -42,7 +42,7 @@ export const makeMainRoutes = () => {
           return <Callback {...props} />
         }}/>
         <ProtectedRoute path="/" component={MainBar} />
-        <ProtectedRoute path="/" component={TournamentGroupings} />
+        <ProtectedRoute exact path="/" component={App} />
         <ProtectedRoute path="/tournaments/:id/picks" component={TournamentGroupings} />
       </div>
     </Router>

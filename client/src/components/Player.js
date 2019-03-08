@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-const Player = ({ onClick, selected, tee_time, first_name, last_name, country }) => (
+const Player = ({ onClick, selected, tee_time, first_name, last_name, country, locked }) => (
   <ListItem
     button
+    disabled={locked}
     selected={selected}
     onClick={onClick}
   >

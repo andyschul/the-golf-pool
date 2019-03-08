@@ -15,16 +15,39 @@ const styles = theme => ({
 });
 
 class PlayerList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {locked: true};
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      60 * 1000
+    );
+    this.tick();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      locked: new Date(this.props.players[0].tee_time) < new Date()
+    });
+  }
+
   render() {
     const { classes, players, groupIndex, selectPlayer } = this.props
     return (
       <div className={classes.root}>
         <ListItem>
-          <ListItemText primary={`Group ${groupIndex+1}`} />
+          <ListItemText primary={`Group ${groupIndex+1} ${this.state.locked ? ' (LOCKED)' : ''}`} />
         </ListItem>
         <List component="nav">
           {players.map(player => (
-            <Player key={player.id} {...player} onClick={() => selectPlayer(player.id, groupIndex)} />
+            <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
           ))}
         </List>
       </div>

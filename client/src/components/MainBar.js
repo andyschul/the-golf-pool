@@ -38,7 +38,7 @@ class MainBar extends React.Component {
   };
 
   goTo = (route) => {
-    this.props.history.replace(`/tournaments/${route}`);
+    this.props.history.replace(`/${route}`);
   }
 
   toggleDrawer = (side, open) => () => {
@@ -52,15 +52,6 @@ class MainBar extends React.Component {
 
     const sideList = (
       <div className={classes.list}>
-        <List>
-          {[{page: 'Home', icon: <HomeIcon />}, {page: 'Profile', icon: <PersonIcon />}].map((item, index) => (
-            <ListItem button key={item.page} onClick={this.goTo.bind(this, item.page.toLowerCase())}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.page} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
         <List>
           {schedule.map((tournament, index) => (
             <ExpansionPanel key={tournament.id}>
@@ -76,10 +67,10 @@ class MainBar extends React.Component {
                 role="button"
                 onClick={this.toggleDrawer('left', false)}
               >
-                <ListItem button onClick={this.goTo.bind(this, `${tournament.id}/picks`)}>
+                <ListItem button onClick={this.goTo.bind(this, `tournaments/${tournament.id}/picks`)}>
                   <ListItemText secondary={'Make Picks'} />
                 </ListItem>
-                <ListItem button onClick={this.goTo.bind(this, `${tournament.id}/results`)}>
+                <ListItem button onClick={this.goTo.bind(this, `tournaments/${tournament.id}/results`)}>
                   <ListItemText secondary={'Results'} />
                 </ListItem>
               </div>
@@ -90,10 +81,13 @@ class MainBar extends React.Component {
         </List>
 
         <Divider />
-        <List>
-            <ListItem button>
-              <ListItemText primary="Logout" />
+        <List onClick={this.toggleDrawer('left', false)}>
+          {[{page: 'Home', route: '', icon: <HomeIcon />}, {page: 'Logout', route: 'logout', icon: <PersonIcon />}].map((item, index) => (
+            <ListItem button key={item.page} onClick={this.goTo.bind(this, item.route)}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.page} />
             </ListItem>
+          ))}
         </List>
       </div>
     );
