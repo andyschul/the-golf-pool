@@ -8,8 +8,7 @@ import PlayerList from './PlayerList'
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
+    marginTop: theme.spacing.unit * 9,
   },
 });
 
@@ -49,9 +48,9 @@ class TournamentGroupings extends Component {
   }
 
   render() {
-    const { groups } = this.props;
+    const { classes, groups } = this.props;
     return (
-      <div>
+      <div className={classes.root}>
         {groups.map((group, index) => (
           <PlayerList key={index} groupIndex={index} players={group} />
         ))}

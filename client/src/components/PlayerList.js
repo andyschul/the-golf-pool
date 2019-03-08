@@ -6,11 +6,14 @@ import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
 
 const styles = theme => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
+    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 2,
   },
 });
 
@@ -42,14 +45,16 @@ class PlayerList extends Component {
     const { classes, players, groupIndex, selectPlayer } = this.props
     return (
       <div className={classes.root}>
-        <ListItem>
-          <ListItemText primary={`Group ${groupIndex+1} ${this.state.locked ? ' (LOCKED)' : ''}`} />
-        </ListItem>
-        <List component="nav">
-          {players.map(player => (
-            <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
-          ))}
-        </List>
+        <Paper>
+          <List component="nav">
+            <ListItem>
+              <ListItemText primary={`Group ${groupIndex+1} ${this.state.locked ? ' (LOCKED)' : ''}`} />
+            </ListItem>
+            {players.map(player => (
+              <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
+            ))}
+          </List>
+        </Paper>
       </div>
     );
   }
