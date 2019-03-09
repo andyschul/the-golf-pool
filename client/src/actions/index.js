@@ -49,6 +49,44 @@ export function groupsFetchData(url) {
 }
 
 
+export function leaderboardHasErrored(bool) {
+    return {
+        type: 'LEADERBOARD_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+export function leaderboardIsLoading(bool) {
+    return {
+        type: 'LEADERBOARD_IS_LOADING',
+        isLoading: bool
+    };
+}
+
+export function leaderboardFetchDataSuccess(leaderboard) {
+    return {
+        type: 'LEADERBOARD_FETCH_DATA_SUCCESS',
+        leaderboard
+    };
+}
+
+export function leaderboardFetchData(url) {
+    return (dispatch) => {
+        dispatch(leaderboardIsLoading(true));
+        fetch(url)
+            .then((response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                dispatch(leaderboardIsLoading(false));
+                return response;
+            })
+            .then((response) => response.json())
+            .then((leaderboard) => dispatch(leaderboardFetchDataSuccess(leaderboard)))
+            .catch(() => dispatch(leaderboardHasErrored(true)));
+    };
+}
+
+
 export function scheduleHasErrored(bool) {
     return {
         type: 'SCHEDULE_HAS_ERRORED',

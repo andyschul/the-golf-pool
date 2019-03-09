@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route, Router, Redirect } from 'react-router-dom';
 import App from './components/App';
 import Login from './components/Login';
+import Leaderboard from './components/Leaderboard';
 import TournamentGroupings from './components/TournamentGroupings';
 import MainBar from './components/MainBar';
 import Callback from './components/Callback';
@@ -43,7 +44,8 @@ export const makeMainRoutes = () => {
         }}/>
         <ProtectedRoute path="/" component={MainBar} />
         <ProtectedRoute exact path="/" component={App} />
-        <ProtectedRoute path="/tournaments/:id/picks" component={TournamentGroupings} />
+        <ProtectedRoute path="/tournaments/:id/groups" component={TournamentGroupings} />
+        <ProtectedRoute path="/tournaments/:id/leaderboard" component={Leaderboard} />
       </div>
     </Router>
   );

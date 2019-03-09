@@ -67,11 +67,11 @@ class MainBar extends React.Component {
                 role="button"
                 onClick={this.toggleDrawer('left', false)}
               >
-                <ListItem button onClick={this.goTo.bind(this, `tournaments/${tournament.id}/picks`)}>
+                <ListItem button onClick={this.goTo.bind(this, `tournaments/${tournament.id}/groups`)}>
                   <ListItemText secondary={'Make Picks'} />
                 </ListItem>
-                <ListItem button onClick={this.goTo.bind(this, `tournaments/${tournament.id}/results`)}>
-                  <ListItemText secondary={'Results'} />
+                <ListItem button onClick={this.goTo.bind(this, `tournaments/${tournament.id}/leaderboard`)}>
+                  <ListItemText secondary={'Leaderboard'} />
                 </ListItem>
               </div>
               </List>

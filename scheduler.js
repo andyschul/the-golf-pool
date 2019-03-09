@@ -13,37 +13,48 @@ schedule.scheduleJob('0 0 1 1 *', function(){
 });
 console.log(`Created scheduler: Yearly Tournament Scheduler`);
 
-
 // CREATE INDIVIDUAL TOURNAMENT SCHEDULERS
 async function createSchedulers() {
   let currentYear = (new Date()).getFullYear();
-  let tourneySchedule;
+  let tournamentSchedule;
   let res = await getAsync(`schedule:${currentYear}`);
   if (res) {
-    tourneySchedule = JSON.parse(res);
+    tournamentSchedule = JSON.parse(res);
   } else {
-    tourneySchedule = await api.getYearlySchedule();
+    tournamentSchedule = await api.getYearlySchedule();
   }
-  if (!tourneySchedule.hasOwnProperty('tournaments')) {
+  if (!tournamentSchedule.hasOwnProperty('tournaments')) {
     console.error('Could not get tournament schedule');
     return;
   }
 
   let now = new Date();
-  for (let tourney of tourneySchedule.tournaments) {
-    let tourneyDate = new Date(`${tourney.start_date}T00:00:00`);
-    if (tourneyDate > now) {
+  for (let tournament of tournamentSchedule.tournaments) {
+    let tournamentStartDate = new Date(`${tournament.start_date}T00:00:00`);
+    let tournamentEndDate = new Date(`${tournament.end_date}T00:00:00`);
+    if (tournamentStartDate > now) {
       // Create scheduler to run every 5th hour, starting 3 days prior to tournament
-      let startDay = new Date(tourneyDate.getTime());
+      let startDay = new Date(tournamentStartDate.getTime());
       startDay.setDate(startDay.getDate() - 3);
 
-      schedule.scheduleJob({ start: startDay, end: tourneyDate, rule: '0 */5 * * *' }, function(){
-        let teeTimes = api.getTeeTimes(tourney.id);
+      schedule.scheduleJob({ start: startDay, end: tournamentStartDate, rule: '0 */5 * * *' }, function(){
+        let teeTimes = api.getTeeTimes(tournament.id);
         if (teeTimes.hasOwnPropery('pairings')) {
           this.cancel();
         }
       });
-      console.log(`Created scheduler: ${tourney.name} ${currentYear}`);
+      console.log(`Created tee time scheduler: ${tournament.name} ${currentYear}`);
+
+      let leaderboardStartDay = new Date(tournamentStartDate.getTime());
+      leaderboardStartDay.setDate(leaderboardStartDay.getDate() + 1);
+
+      schedule.scheduleJob({ start: leaderboardStartDay, rule: '0 */2 * * *' }, function(){
+        let leaderboard = api.getTournamentLeaderboard(tournament.id);
+        if (leaderboard.leaderboard.status === 'closed') {
+          this.cancel();
+        }
+      });
+      console.log(`Created leaderboard scheduler: ${tournament.name} ${currentYear}`);
     }
   }
 }

@@ -18,6 +18,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const api = require('./api');
+api.getTestTournamentLeaderboard('b404a8d5-5e33-4417-ae20-5d4d147042ee');
 
 // API calls
 app.get('/api/hello', (req, res) => {
@@ -56,9 +58,9 @@ app.get('/api/groupings', async (req, res, next) => {
   }
 });
 
-app.get('/api/tournaments/:tournyId/groups', async (req, res, next) => {
+app.get('/api/tournaments/:tournamentId/groups', async (req, res, next) => {
   try {
-    let groups = await getAsync(`tournaments:${req.param('tournyId')}:groups`);
+    let groups = await getAsync(`tournaments:${req.param('tournamentId')}:groups`);
     groups = JSON.parse(groups)
     res.json(groups['groups']);
   } catch (e) {
@@ -75,10 +77,10 @@ app.get('/api/users/:userId', async (req, res, next) => {
   }
 });
 
-app.put('/api/users/:userId/tournaments/:tournyId/picks', async (req, res, next) => {
+app.put('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.param('userId') });
-    user.tournaments = [{tournament_id: req.param('tournyId'), picks: req.body['picks']}]
+    user.tournaments = [{tournament_id: req.param('tournamentId'), picks: req.body['picks']}]
     user.save()
     res.json({tournaments: user.tournaments});
   } catch (e) {
@@ -86,23 +88,148 @@ app.put('/api/users/:userId/tournaments/:tournyId/picks', async (req, res, next)
   }
 });
 
-app.get('/api/users/:userId/tournaments/:tournyId/picks', async (req, res, next) => {
+app.get('/api/users/:userId/tournaments/:tournamentId/groups', async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.param('userId') });
-    let userTournyData = user.tournaments.filter(t => t.tournament_id === req.param('tournyId'))[0];
+    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.param('tournamentId'))[0];
     if (req.query['full']) {
-      let groups = await getAsync(`tournaments:${req.param('tournyId')}:groups`);
+      let groups = await getAsync(`tournaments:${req.param('tournamentId')}:groups`);
       groups = JSON.parse(groups);
-      let playerIds = userTournyData ? userTournyData['picks'].map(x => x.id) : [];
+      let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
       let retJson = groups ? groups['groups'].map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, selected: true } : { ...player, selected: false })) : [];
+      console.log('groups full')
       res.json(retJson);
     } else {
-      res.json(userTournyData);
+      console.log('groups')
+      res.json(usertournamentData);
     }
   } catch (e) {
     next(e)
   }
 });
+
+app.get('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.param('userId') });
+    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.param('tournamentId'))[0];
+    let results = await getAsync(`tournaments:${req.param('tournamentId')}:results`);
+    results = JSON.parse(results);
+    usertournamentData['picks'].map(x => results[x.id])
+    let retJson = usertournamentData['picks'].map(x => results.results[x.id]);
+    res.json(retJson);
+  } catch (e) {
+    next(e)
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => {
+  try {
+    let leaderboard = await getAsync(`tournaments:${req.param('tournamentId')}:leaderboard`);
+    if (!leaderboard) {
+      console.log('no leaderboard')
+      res.json({
+        tournamentStatus: 'scheduled',
+        leaderboard: []
+      });
+      return next()
+    }
+    leaderboard = JSON.parse(leaderboard);
+
+    let tdate = new Date(`${leaderboard.leaderboard.start_date}T00:00:00`)
+    tdate.setDate(tdate.getDate() + 1);
+    if (tdate > new Date()) {
+      console.log('hasnt started yet')
+      res.json({
+        tournamentStatus: 'scheduled',
+        leaderboard: []
+      });
+      return next();
+    }
+
+    const users = await User.find({});
+
+    let players = await getAsync(`tournaments:${req.param('tournamentId')}:players`);
+
+    players = JSON.parse(players);
+    let r = players.players;
+    let leaderboardData = []
+
+    leaderboardData = users.map(user => {
+      let tournamentPicks = user._doc.tournaments.filter(t => t.tournament_id === req.param('tournamentId'))[0].picks;
+      picks = tournamentPicks.map(player => (
+        {
+          id: r[player._doc.id].id,
+          first_name: r[player._doc.id].first_name,
+          last_name: r[player._doc.id].last_name,
+          position: r[player._doc.id].position,
+          score: r[player._doc.id].score,
+          status: r[player._doc.id].status || null,
+          money: r[player._doc.id].money || null,
+          strokes: r[player._doc.id].strokes,
+        }
+      ));
+
+      picks.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));
+
+      reducedPicks = picks.reduce((accumulator, item) => {
+        accumulator['totalMoney'] = (accumulator['totalMoney'] || 0) + item['money'] || 0;
+        accumulator['totalScore'] = (accumulator['totalScore'] || 0) + item['score'];
+        return accumulator;
+      }, {});
+
+      return {
+        id: user.id,
+        username: user._doc.username,
+        picks: picks,
+        ...reducedPicks
+      }
+    })
+
+    leaderboard.leaderboard.status === 'closed' ?
+      leaderboardData.sort((a,b) => (a.totalMoney > b.totalMoney) ? -1 : ((b.totalMoney > a.totalMoney) ? 1 : 0))
+      :
+      leaderboardData.sort((a,b) => (a.totalScore > b.totalScore) ? 1 : ((b.totalScore > a.totalScore) ? -1 : 0));
+
+    retJson = {
+      tournamentStatus: leaderboard.leaderboard.status,
+      leaderboard: leaderboardData
+    }
+    console.log(retJson)
+    res.json(retJson);
+  } catch (e) {
+    next(e)
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
