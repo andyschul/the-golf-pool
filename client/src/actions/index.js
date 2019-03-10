@@ -4,6 +4,11 @@ export const selectPlayer = (id, groupIndex) => ({
   groupIndex
 })
 
+export const leaderboardExpandRow = (id) => ({
+  type: 'LEADERBOARD_EXPAND_ROW',
+  id
+})
+
 export function groupsHasErrored(bool) {
     return {
         type: 'GROUPS_HAS_ERRORED',

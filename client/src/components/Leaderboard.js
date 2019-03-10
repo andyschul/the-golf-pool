@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { leaderboardExpandRow } from '../actions';
 import { connect } from 'react-redux';
 import { leaderboardFetchData } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
@@ -44,64 +45,66 @@ class Leaderboard extends Component {
   }
 
   render() {
-    const { classes, leaderboard } = this.props;
+    const { classes, leaderboard, expandRow } = this.props;
     return (
-<React.Fragment>
+      <React.Fragment>
       {leaderboard.leaderboard.length ?
         <Paper className={classes.root}>
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell align="right">Score</TableCell>
-                {leaderboard.tournamentStatus !== 'closed' && (
+                <TableCell>Username</TableCell>
+                {leaderboard.tournamentStatus === 'closed' && (
                   <TableCell align="right">Money</TableCell>
                 )}
+                <TableCell align="right">Score</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {leaderboard.leaderboard.map((user, idx) => (
                 <React.Fragment key={user.id}>
-                  <TableRow>
+                  <TableRow onClick={event => expandRow(user.id)}>
                     <TableCell component="th" scope="row">
                       {idx+1}
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {user.username}
                     </TableCell>
-                    <TableCell align="right">{user.totalScore}</TableCell>
-                    {leaderboard.tournamentStatus !== 'closed' && (
+                    {leaderboard.tournamentStatus === 'closed' && (
                       <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
                     )}
-
+                    <TableCell align="right">{user.totalScore}</TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell colSpan={4}>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="right">Score</TableCell>
-                            {leaderboard.tournamentStatus !== 'closed' && (
-                              <TableCell>Money</TableCell>
-                            )}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {user.picks.map(player => (
-                            <TableRow key={player.id}>
-                              <TableCell>{player.first_name + ' ' + player.last_name}</TableCell>
-                              <TableCell align="right">{this.formatScore(player.score)}</TableCell>
-                              {leaderboard.tournamentStatus !== 'closed' && (
-                                <TableCell>{this.formatMoney(player.money) || 0}</TableCell>
+                  {user.expanded && (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Name</TableCell>
+                              {leaderboard.tournamentStatus === 'closed' && (
+                                <TableCell>Money</TableCell>
                               )}
+                              <TableCell align="right">Score</TableCell>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableCell>
-                  </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {user.picks.map(player => (
+                              <TableRow key={player.id}>
+                                <TableCell>{player.first_name + ' ' + player.last_name}</TableCell>
+                                {leaderboard.tournamentStatus === 'closed' && (
+                                  <TableCell>{this.formatMoney(player.money) || 0}</TableCell>
+                                )}
+                                <TableCell align="right">{this.formatScore(player.score)}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
                 </React.Fragment>
               ))}
             </TableBody>
@@ -112,7 +115,7 @@ class Leaderboard extends Component {
           Leaderboard will be availbale on day 2 of the tournament
         </Typography>
       }
-</React.Fragment>
+      </React.Fragment>
 
     );
   }
@@ -134,6 +137,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url)),
+        expandRow: (id) => dispatch(leaderboardExpandRow(id)),
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Leaderboard));

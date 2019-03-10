@@ -20,6 +20,13 @@ export function leaderboard(state = {status: '', leaderboard: []}, action) {
     switch (action.type) {
         case 'LEADERBOARD_FETCH_DATA_SUCCESS':
             return action.leaderboard;
+        case 'LEADERBOARD_EXPAND_ROW':
+            return {
+              ...state,
+              leaderboard: state.leaderboard.map(item =>
+                item.id === action.id ? { ...item, expanded: !item.expanded } : item
+              )
+            }
         default:
             return state;
     }
