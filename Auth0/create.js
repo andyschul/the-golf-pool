@@ -10,7 +10,7 @@ function create(user, callback) {
 
     const users = db.collection('users');
 
-    users.findOne({ email: user.email }, function (err, withSameMail) {
+    users.findOne({$or: [ { email: user.email }, { username: user.username } ]}, function (err, withSameMail) {
       if (err) return callback(err);
       if (withSameMail) return callback(new Error('the user already exists'));
 

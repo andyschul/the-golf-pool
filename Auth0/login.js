@@ -10,7 +10,7 @@ function login(email, password, callback) {
 
     const users = db.collection('users');
 
-    users.findOne({ email: email }, function (err, user) {
+    users.findOne({$or: [ { email: email }, { username: email } ]}, function (err, user) {
       if (err) return callback(err);
       if (!user) return callback(new WrongUsernameOrPasswordError(email));
 

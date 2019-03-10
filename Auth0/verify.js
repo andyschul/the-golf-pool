@@ -8,11 +8,11 @@ function verify(email, callback) {
     const db = client.db(configuration.dbName);
 
     const users = db.collection('users');
-    const query = { email: email, email_verified: false };
+    const query = { email: email };
 
     users.update(query, { $set: { email_verified: true } }, function (err, count) {
       if (err) return callback(err);
-      callback(null, count > 0);
+      callback(null, true);
     });
   });
 }
