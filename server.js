@@ -18,71 +18,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const api = require('./api');
-api.getTestTournamentLeaderboard('b404a8d5-5e33-4417-ae20-5d4d147042ee');
-
-// API calls
-app.get('/api/hello', (req, res) => {
-  res.send({ express: 'Hello From Express' });
-});
-
-app.post('/api/world', (req, res) => {
-  client.set("foo", "bar");
-  getAsync('foo').then(function(res) {
-      console.log(res); // => 'bar'
-  });
-  console.log(req.body);
-  res.send(
-    `I received your POST request. This is what you sent me: ${req.body.post}`,
-  );
-});
-
 app.get('/api/schedule/:year', async (req, res, next) => {
   try {
-    let schedule = await getAsync(`schedule:${req.param('year')}`);
+    let schedule = await getAsync(`schedule:${req.params.year}`);
     schedule = JSON.parse(schedule)
-    console.log(schedule)
     res.json(schedule['tournaments']);
-  } catch (e) {
-    next(e)
-  }
-});
-
-app.get('/api/groupings', async (req, res, next) => {
-  try {
-    let groups = await getAsync(`tournaments:b404a8d5-5e33-4417-ae20-5d4d147042ee:groups`);
-    groups = JSON.parse(groups)
-    res.json(groups['groups']);
-  } catch (e) {
-    next(e)
-  }
-});
-
-app.get('/api/tournaments/:tournamentId/groups', async (req, res, next) => {
-  try {
-    let groups = await getAsync(`tournaments:${req.param('tournamentId')}:groups`);
-    groups = JSON.parse(groups)
-    res.json(groups['groups']);
-  } catch (e) {
-    next(e)
-  }
-});
-
-app.get('/api/users/:userId', async (req, res, next) => {
-  try {
-    const user = await User.findOne({ _id: req.param('userId') });
-    res.json({msg: 'ok'});
-  } catch (e) {
-    next(e)
-  }
-});
-
-app.put('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, next) => {
-  try {
-    const user = await User.findOne({ _id: req.param('userId') });
-    user.tournaments = [{tournament_id: req.param('tournamentId'), picks: req.body['picks']}]
-    user.save()
-    res.json({tournaments: user.tournaments});
   } catch (e) {
     next(e)
   }
@@ -90,17 +30,15 @@ app.put('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, n
 
 app.get('/api/users/:userId/tournaments/:tournamentId/groups', async (req, res, next) => {
   try {
-    const user = await User.findOne({ _id: req.param('userId') });
-    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.param('tournamentId'))[0];
+    const user = await User.findOne({ _id: req.params.userId });
+    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId)[0];
     if (req.query['full']) {
-      let groups = await getAsync(`tournaments:${req.param('tournamentId')}:groups`);
+      let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
       groups = JSON.parse(groups);
       let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
       let retJson = groups ? groups['groups'].map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, selected: true } : { ...player, selected: false })) : [];
-      console.log('groups full')
       res.json(retJson);
     } else {
-      console.log('groups')
       res.json(usertournamentData);
     }
   } catch (e) {
@@ -108,37 +46,21 @@ app.get('/api/users/:userId/tournaments/:tournamentId/groups', async (req, res, 
   }
 });
 
-app.get('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, next) => {
+app.put('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, next) => {
   try {
-    const user = await User.findOne({ _id: req.param('userId') });
-    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.param('tournamentId'))[0];
-    let results = await getAsync(`tournaments:${req.param('tournamentId')}:results`);
-    results = JSON.parse(results);
-    usertournamentData['picks'].map(x => results[x.id])
-    let retJson = usertournamentData['picks'].map(x => results.results[x.id]);
-    res.json(retJson);
+    const user = await User.findOne({ _id: req.params.userId });
+    user.tournaments = [{tournament_id: req.params.tournamentId, picks: req.body['picks']}]
+    user.save()
+    res.json({tournaments: user.tournaments});
   } catch (e) {
     next(e)
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
 app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => {
   try {
-    let leaderboard = await getAsync(`tournaments:${req.param('tournamentId')}:leaderboard`);
+    let leaderboard = await getAsync(`tournaments:${req.params.tournamentId}:leaderboard`);
     if (!leaderboard) {
-      console.log('no leaderboard')
       res.json({
         tournamentStatus: 'scheduled',
         leaderboard: []
@@ -150,7 +72,6 @@ app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => 
     let tdate = new Date(`${leaderboard.leaderboard.start_date}T00:00:00`)
     tdate.setDate(tdate.getDate() + 1);
     if (tdate > new Date()) {
-      console.log('hasnt started yet')
       res.json({
         tournamentStatus: 'scheduled',
         leaderboard: []
@@ -159,15 +80,14 @@ app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => 
     }
 
     const users = await User.find({});
-
-    let players = await getAsync(`tournaments:${req.param('tournamentId')}:players`);
+    let players = await getAsync(`tournaments:${req.params.tournamentId}:players`);
 
     players = JSON.parse(players);
     let r = players.players;
     let leaderboardData = []
 
     leaderboardData = users.map(user => {
-      let tournamentPicks = user._doc.tournaments.filter(t => t.tournament_id === req.param('tournamentId'))[0].picks;
+      let tournamentPicks = user._doc.tournaments.filter(t => t.tournament_id === req.params.tournamentId)[0].picks;
       picks = tournamentPicks.map(player => (
         {
           id: r[player._doc.id].id,
@@ -206,29 +126,11 @@ app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => 
       tournamentStatus: leaderboard.leaderboard.status,
       leaderboard: leaderboardData
     }
-    console.log(retJson)
     res.json(retJson);
   } catch (e) {
     next(e)
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if (process.env.NODE_ENV === 'production') {
