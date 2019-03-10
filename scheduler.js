@@ -2,6 +2,7 @@ const redis = require('redis')
 const schedule = require('node-schedule');
 const {promisify} = require('util');
 const api = require('./api');
+const email = require('./email');
 require('dotenv').config();
 
 const client = redis.createClient(process.env.REDIS_URL);
@@ -34,27 +35,40 @@ async function createSchedulers() {
     let tournamentEndDate = new Date(`${tournament.end_date}T00:00:00`);
     if (tournamentStartDate > now) {
       // Create scheduler to run every 5th hour, starting 3 days prior to tournament
-      let startDay = new Date(tournamentStartDate.getTime());
-      startDay.setDate(startDay.getDate() - 3);
+      let teeTimesStartDay = new Date(tournamentStartDate.getTime());
+      teeTimesStartDay.setDate(teeTimesStartDay.getDate() - 3);
 
-      schedule.scheduleJob({ start: startDay, end: tournamentStartDate, rule: '0 */5 * * *' }, function(){
-        let teeTimes = api.getTeeTimes(tournament.id);
-        if (teeTimes.hasOwnPropery('pairings')) {
-          this.cancel();
-        }
+      schedule.scheduleJob({ start: teeTimesStartDay, end: tournamentStartDate, rule: '0 */5 * * *' }, function(){
+        api.getTeeTimes(tournament.id).then(data => {
+          email.sendEmail({
+            from: 'thegolfpoolhost@gmail.com',
+            to: 'abschultz20@gmail.com',
+            subject: 'Tee times was called',
+            text: 'Tee times was called'
+          })
+          if (data.groups.length) {
+            email.sendEmail({
+              from: 'thegolfpoolhost@gmail.com',
+              to: 'all',
+              subject: `The ${tournament.name} tee times have been posted!`,
+              text: `Visit thegolfpool.herokuapp.com to make your selections`
+            })
+            this.cancel();
+          }
+        });
       });
-      console.log(`Created tee time scheduler: ${tournament.name} ${currentYear}`);
+      console.log(`Created tee time scheduler: ${tournament.name} ${currentYear} starting ${teeTimesStartDay}`);
 
       let leaderboardStartDay = new Date(tournamentStartDate.getTime());
-      leaderboardStartDay.setDate(leaderboardStartDay.getDate() + 1);
-
-      schedule.scheduleJob({ start: leaderboardStartDay, rule: '0 */2 * * *' }, function(){
-        let leaderboard = api.getTournamentLeaderboard(tournament.id);
-        if (leaderboard.leaderboard.status === 'closed') {
-          this.cancel();
-        }
+      leaderboardStartDay.setHours(leaderboardStartDay.getHours() + 19);
+      schedule.scheduleJob({ start: leaderboardStartDay, rule: '0 */1 * * *' }, function(){
+        api.getTournamentLeaderboard(tournament.id).then(data => {
+          if (data.leaderboard.status === 'closed') {
+            this.cancel();
+          }
+        });;
       });
-      console.log(`Created leaderboard scheduler: ${tournament.name} ${currentYear}`);
+      console.log(`Created leaderboard scheduler: ${tournament.name} ${currentYear} starting ${leaderboardStartDay}`);
     }
   }
 }

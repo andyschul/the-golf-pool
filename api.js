@@ -47,15 +47,18 @@ function getTeeTimes(tournamentId) {
   let currentYear = (new Date()).getFullYear();
   return axios.get(`${process.env.SPORTS_RADAR_URI}/teetimes/pga/${currentYear}/tournaments/${tournamentId}/rounds/1/teetimes.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
     .then(function (response) {
-      let pairings = response.data.round.courses[0].pairings;
-      let groups = groupPairings(pairings, 10);
+      if (response.data.round.courses.length) {
+        let pairings = response.data.round.courses[0].pairings;
+        let groups = groupPairings(pairings, 10);
 
-      client.set(`tournaments:${tournamentId}:groups`, JSON.stringify({groups:groups}));
-      return {groups: groups};
+        client.set(`tournaments:${tournamentId}:groups`, JSON.stringify({groups:groups}));
+        return {groups: groups};
+      }
+      return {groups: []}
     })
     .catch(function (error) {
       console.log('error getTeeTimes', error);
-      return {};
+      return {groups: []};
     });
 }
 
