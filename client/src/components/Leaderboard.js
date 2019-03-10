@@ -44,6 +44,19 @@ class Leaderboard extends Component {
     return '$'+money.toLocaleString();
   }
 
+  formatWinners(name, pos) {
+    switch(pos) {
+      case 1:
+        return `🥇${name}`;
+      case 2:
+        return `🥈${name}`;
+      case 3:
+        return `🥉${name}`;
+      default:
+        return name;
+    }
+  }
+
   render() {
     const { classes, leaderboard, expandRow } = this.props;
     return (
@@ -70,7 +83,9 @@ class Leaderboard extends Component {
                       {idx+1}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {user.username}
+                      <Typography noWrap>
+                         {leaderboard.tournamentStatus === 'closed' ? this.formatWinners(user.username, idx+1) : user.username}
+                      </Typography>
                     </TableCell>
                     {leaderboard.tournamentStatus === 'closed' && (
                       <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
