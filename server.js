@@ -106,8 +106,10 @@ app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => 
       reducedPicks = picks.reduce((accumulator, item) => {
         accumulator['totalMoney'] = (accumulator['totalMoney'] || 0) + item['money'] || 0;
         accumulator['totalScore'] = (accumulator['totalScore'] || 0) + item['score'];
+        accumulator['totalPosition'] = (accumulator['totalPosition'] || 0) + item['position'];
         return accumulator;
       }, {});
+      reducedPicks['avgPosition'] = reducedPicks['totalPosition'] / picks.length;
 
       return {
         id: user.id,

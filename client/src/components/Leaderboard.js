@@ -53,19 +53,20 @@ class Leaderboard extends Component {
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell></TableCell>
+                <TableCell style={{paddingRight: 10, width: 5}}></TableCell>
                 <TableCell>Username</TableCell>
                 {leaderboard.tournamentStatus === 'closed' && (
                   <TableCell align="right">Money</TableCell>
                 )}
-                <TableCell align="right">Score</TableCell>
+                <TableCell align="right">Avg Position</TableCell>
+                <TableCell align="right">Combined Score</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {leaderboard.leaderboard.map((user, idx) => (
                 <React.Fragment key={user.id}>
-                  <TableRow onClick={event => expandRow(user.id)}>
-                    <TableCell component="th" scope="row">
+                  <TableRow selected={user.expanded} onClick={event => expandRow(user.id)}>
+                    <TableCell component="th" scope="row" style={{paddingRight: 10, width: 5}}>
                       {idx+1}
                     </TableCell>
                     <TableCell component="th" scope="row">
@@ -74,14 +75,16 @@ class Leaderboard extends Component {
                     {leaderboard.tournamentStatus === 'closed' && (
                       <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
                     )}
-                    <TableCell align="right">{user.totalScore}</TableCell>
+                    <TableCell align="right">{user.avgPosition}</TableCell>
+                    <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
                   </TableRow>
                   {user.expanded && (
                     <TableRow>
-                      <TableCell colSpan={4}>
+                      <TableCell colSpan={5}>
                         <Table>
                           <TableHead>
                             <TableRow>
+                              <TableCell style={{paddingRight: 10, width: 5}}>Pos</TableCell>
                               <TableCell>Name</TableCell>
                               {leaderboard.tournamentStatus === 'closed' && (
                                 <TableCell>Money</TableCell>
@@ -92,6 +95,7 @@ class Leaderboard extends Component {
                           <TableBody>
                             {user.picks.map(player => (
                               <TableRow key={player.id}>
+                                <TableCell style={{paddingRight: 10, width: 5}}>{player.position}</TableCell>
                                 <TableCell>{player.first_name + ' ' + player.last_name}</TableCell>
                                 {leaderboard.tournamentStatus === 'closed' && (
                                   <TableCell>{this.formatMoney(player.money) || 0}</TableCell>
