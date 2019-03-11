@@ -64,13 +64,13 @@ async function createSchedulers() {
       console.log(`Created tee time scheduler: ${tournament.name} ${currentYear} starting ${teeTimesStartDay}`);
 
       let leaderboardStartDay = new Date(tournamentStartDate.getTime());
-      leaderboardStartDay.setHours(leaderboardStartDay.getHours() + 18);
+      leaderboardStartDay.setHours(leaderboardStartDay.getHours() + 20);
       schedule.scheduleJob({ start: leaderboardStartDay, rule: '0 */1 * * *' }, function(){
         api.getTournamentLeaderboard(tournament.id).then(data => {
           if (data.leaderboard.status === 'closed') {
             this.cancel();
           }
-        });;
+        });
       });
       console.log(`Created leaderboard scheduler: ${tournament.name} ${currentYear} starting ${leaderboardStartDay}`);
     }
