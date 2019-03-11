@@ -72,7 +72,7 @@ const styles = theme => ({
 class PlayerList extends Component {
   constructor(props) {
     super(props);
-    this.state = {locked: true};
+    this.state = {locked: false};
   }
 
   componentDidMount() {
@@ -88,9 +88,10 @@ class PlayerList extends Component {
   }
 
   tick() {
-    this.setState({
-      locked: new Date(this.props.players[0].tee_time) < new Date()
-    });
+    console.log('tick')
+    // this.setState({
+    //   locked: new Date(this.props.players[0].tee_time) < new Date()
+    // });
   }
 
   render() {

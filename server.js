@@ -79,7 +79,7 @@ app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => 
       return next();
     }
 
-    const users = await User.find({});
+    const users = await User.find({'tournaments.tournament_id': req.params.tournamentId});
     let players = await getAsync(`tournaments:${req.params.tournamentId}:players`);
 
     players = JSON.parse(players);
