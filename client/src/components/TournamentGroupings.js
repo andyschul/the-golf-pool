@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import PlayerList from './PlayerList'
 
@@ -75,43 +76,64 @@ class TournamentGroupings extends Component {
   };
 
   render() {
-    const { classes, groups, groupsCanSave, handleClose } = this.props;
-    return (
-      <div className={classes.root}>
-        {groups.map((group, index) => (
-          <PlayerList key={index} groupIndex={index} players={group} />
-        ))}
+    const { classes, groups, groupsCanSave, handleClose, isLoading } = this.props;
 
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'center'
-          }}
-          open={this.state.open}
-          autoHideDuration={2000}
-          onClose={this.handleClose}
-          message={<span id="message-id">{this.state.text}</span>}
-        />
+    if (isLoading) {
+      return (
+        <div className={classes.root}>
+          <Typography variant="h6" gutterBottom className={classes.root}>
+            loading...
+          </Typography>
+        </div>
+      )
+    } else {
+      return (
+        <div className={classes.root}>
+        {groups.length ?
+          <React.Fragment>
+            {groups.map((group, index) => (
+              <PlayerList key={index} groupIndex={index} players={group} />
+            ))}
 
-        <Snackbar
-          open={groupsCanSave}
-          TransitionComponent={this.TransitionUp}
-          ContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={
-            <div>
-            <Button variant="contained" color="secondary" onClick={this.cancelPicks.bind(this)}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" onClick={this.savePicks.bind(this)}>
-              Save
-            </Button>
-            </div>
-          }
-        />
-      </div>
-    );
+            <Snackbar
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center'
+              }}
+              open={this.state.open}
+              autoHideDuration={2000}
+              onClose={this.handleClose}
+              message={<span id="message-id">{this.state.text}</span>}
+            />
+
+            <Snackbar
+              open={groupsCanSave}
+              TransitionComponent={this.TransitionUp}
+              ContentProps={{
+                'aria-describedby': 'message-id',
+              }}
+              message={
+                <div>
+                <Button variant="contained" color="secondary" onClick={this.cancelPicks.bind(this)}>
+                  Cancel
+                </Button>
+                <Button variant="contained" color="primary" onClick={this.savePicks.bind(this)}>
+                  Save
+                </Button>
+                </div>
+              }
+            />
+          </React.Fragment>
+        :
+
+        <Typography variant="h6" gutterBottom className={classes.root}>
+          An email will be sent out when the picks are available. Come check back soon!
+        </Typography>
+        }
+
+        </div>
+      );
+    }
   }
 }
 

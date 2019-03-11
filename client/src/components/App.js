@@ -22,7 +22,7 @@ class App extends React.Component {
     return (
       <div className={classes.root}>
         <Typography variant="h4" gutterBottom>
-          Welcome to the Majors Pool!
+          Welcome to the Golf Pool!
         </Typography>
       </div>
     );

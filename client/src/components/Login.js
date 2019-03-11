@@ -23,7 +23,7 @@ class Login extends React.Component {
     return (
       <div className={classes.root}>
         <Typography variant="h4" gutterBottom>
-          Majors Pool
+          The Golf Pool
         </Typography>
         <Button variant="contained" color="secondary" onClick={this.handleClick}>
           Login

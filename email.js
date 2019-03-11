@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const User = require('./models/user');
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -8,7 +9,13 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-function sendEmail(mailOptions) {
+async function sendEmail(mailOptions) {
+  const users = await User.find({});
+
+  if (mailOptions.to === 'all') {
+    mailOptions.to = users.map(user=>user.email).join();
+  }
+
   transporter.sendMail(mailOptions, function(error, info){
     error ? console.log(error) : console.log('Email sent: ' + info.response);
   });

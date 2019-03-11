@@ -58,85 +58,95 @@ class Leaderboard extends Component {
   }
 
   render() {
-    const { classes, leaderboard, expandRow } = this.props;
-    return (
-      <React.Fragment>
-      {leaderboard.leaderboard.length ?
-        <Paper className={classes.root}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{paddingRight: 10, width: 5}}></TableCell>
-                <TableCell>Username</TableCell>
-                {leaderboard.tournamentStatus === 'closed' && (
-                  <TableCell align="right">Money</TableCell>
-                )}
-                <TableCell align="right">Avg Position</TableCell>
-                <TableCell align="right">Combined Score</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {leaderboard.leaderboard.map((user, idx) => (
-                <React.Fragment key={user.id}>
-                  <TableRow selected={user.expanded} onClick={event => expandRow(user.id)}>
-                    <TableCell component="th" scope="row" style={{paddingRight: 10, width: 5}}>
-                      {idx+1}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      <Typography noWrap>
-                         {leaderboard.tournamentStatus === 'closed' ? this.formatWinners(user.username, idx+1) : user.username}
-                      </Typography>
-                    </TableCell>
-                    {leaderboard.tournamentStatus === 'closed' && (
-                      <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
-                    )}
-                    <TableCell align="right">{user.avgPosition}</TableCell>
-                    <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
-                  </TableRow>
-                  {user.expanded && (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell style={{paddingRight: 10, width: 5}}>Pos</TableCell>
-                              <TableCell>Name</TableCell>
-                              {leaderboard.tournamentStatus === 'closed' && (
-                                <TableCell>Money</TableCell>
-                              )}
-                              <TableCell align="right">Score</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {user.picks.map(player => (
-                              <TableRow key={player.id}>
-                                <TableCell style={{paddingRight: 10, width: 5}}>{player.position}</TableCell>
-                                <TableCell>{player.first_name + ' ' + player.last_name}</TableCell>
-                                {leaderboard.tournamentStatus === 'closed' && (
-                                  <TableCell>{this.formatMoney(player.money) || 0}</TableCell>
-                                )}
-                                <TableCell align="right">{this.formatScore(player.score)}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableCell>
-                    </TableRow>
+    const { classes, leaderboard, isLoading, expandRow } = this.props;
+    if (isLoading) {
+      return (
+        <div className={classes.root}>
+          <Typography variant="h6" gutterBottom className={classes.root}>
+            loading...
+          </Typography>
+        </div>
+      )
+    } else {
+      return (
+        <React.Fragment>
+        {leaderboard.leaderboard.length ?
+          <Paper className={classes.root}>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{paddingRight: 10, width: 5}}></TableCell>
+                  <TableCell>Username</TableCell>
+                  {leaderboard.tournamentStatus === 'closed' && (
+                    <TableCell align="right">Money</TableCell>
                   )}
+                  <TableCell align="right">Avg Position</TableCell>
+                  <TableCell align="right">Combined Score</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {leaderboard.leaderboard.map((user, idx) => (
+                  <React.Fragment key={user.id}>
+                    <TableRow selected={user.expanded} onClick={event => expandRow(user.id)}>
+                      <TableCell component="th" scope="row" style={{paddingRight: 10, width: 5}}>
+                        {idx+1}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography noWrap>
+                           {leaderboard.tournamentStatus === 'closed' ? this.formatWinners(user.username, idx+1) : user.username}
+                        </Typography>
+                      </TableCell>
+                      {leaderboard.tournamentStatus === 'closed' && (
+                        <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
+                      )}
+                      <TableCell align="right">{user.avgPosition}</TableCell>
+                      <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
+                    </TableRow>
+                    {user.expanded && (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell style={{paddingRight: 10, width: 5}}>Pos</TableCell>
+                                <TableCell>Name</TableCell>
+                                {leaderboard.tournamentStatus === 'closed' && (
+                                  <TableCell>Money</TableCell>
+                                )}
+                                <TableCell align="right">Score</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {user.picks.map(player => (
+                                <TableRow key={player.id}>
+                                  <TableCell style={{paddingRight: 10, width: 5}}>{player.position}</TableCell>
+                                  <TableCell>{player.first_name + ' ' + player.last_name}</TableCell>
+                                  {leaderboard.tournamentStatus === 'closed' && (
+                                    <TableCell>{this.formatMoney(player.money) || 0}</TableCell>
+                                  )}
+                                  <TableCell align="right">{this.formatScore(player.score)}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableCell>
+                      </TableRow>
+                    )}
 
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-        :
-        <Typography variant="h6" gutterBottom className={classes.root}>
-          Leaderboard will be availbale on day 2 of the tournament
-        </Typography>
-      }
-      </React.Fragment>
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+          :
+          <Typography variant="h6" gutterBottom className={classes.root}>
+            Leaderboard will be available at 7PM on day 1 of the tournament
+          </Typography>
+        }
+        </React.Fragment>
 
-    );
+      );
+    }
   }
 }
 
