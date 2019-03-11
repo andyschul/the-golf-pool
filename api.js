@@ -19,8 +19,16 @@ function groupPairings(pairings, groupNums) {
   let min = Math.floor(ppg);
 
   for (let i=0; i<groupNums; i++) {
-    let size = !remainder ? ppg : (i<remainder ? max : min)
-    groupedPairings.push(pairings.splice(0, size));
+    let size = !remainder ? ppg : (i<remainder ? max : min);
+    let group = pairings
+                  .splice(0, size)
+                  .map(g=>g.players.map(p=>({
+                    tee_time: g.tee_time,
+                    ...p
+                  })))
+                  .reduce((acc, val) => acc.concat(val), []);
+
+    groupedPairings.push(group);
   }
   return groupedPairings;
 }
