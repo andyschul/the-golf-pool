@@ -4,6 +4,12 @@ const redis = require('redis')
 const client = redis.createClient(process.env.REDIS_URL);
 const CONTESTS = ["The Open Championship", "U.S. Open", "Masters Tournament", "PGA Championship", "THE PLAYERS Championship"];
 
+// Ping heroku to keep app alive
+setInterval(function() {
+  axios.get("http://thegolfpool.herokuapp.com");
+  console.log('pinging herokuapp')
+}, 300000);
+
 function groupPairings(pairings, groupNums) {
   let groupedPairings = [];
   let pLen = pairings.length;
