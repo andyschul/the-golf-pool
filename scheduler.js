@@ -47,16 +47,6 @@ async function createSchedulers() {
             text: 'Tee times was called'
           })
           if (data.groups.length) {
-            email.sendEmail({
-              from: 'thegolfpoolhost@gmail.com',
-              to: 'all',
-              subject: `The ${tournament.name} tee times have been posted!`,
-              text: `
-                Visit thegolfpool.herokuapp.com to make your selections.\n
-                You can change your picks anytime up until the first golfer tees off in each group.\n
-                Good Luck!
-              `
-            })
             this.cancel();
           }
         });
