@@ -54,8 +54,13 @@ async function createSchedulers() {
       console.log(`Created tee time scheduler: ${tournament.name} ${currentYear} starting ${teeTimesStartDay}`);
 
       let leaderboardStartDay = new Date(tournamentStartDate.getTime());
-      leaderboardStartDay.setHours(leaderboardStartDay.getHours() + 20);
-      schedule.scheduleJob({ start: leaderboardStartDay, rule: '0 */1 * * *' }, function(){
+      schedule.scheduleJob({ start: leaderboardStartDay, end: new Date('2019-03-18'), rule: '0 * * * *' }, function(){
+        email.sendEmail({
+          from: 'thegolfpoolhost@gmail.com',
+          to: 'abschultz20@gmail.com',
+          subject: 'Leaderboard called',
+          text: 'Leaderboard called'
+        })
         api.getTournamentLeaderboard(tournament.id).then(data => {
           if (data.leaderboard.status === 'closed') {
             this.cancel();
