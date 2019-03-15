@@ -33,42 +33,43 @@ async function createSchedulers() {
   for (let tournament of tournamentSchedule.tournaments) {
     let tournamentStartDate = new Date(`${tournament.start_date}T00:00:00`);
     let tournamentEndDate = new Date(`${tournament.end_date}T00:00:00`);
-    if (tournamentStartDate > now) {
-      // Create scheduler to run every 5th hour, starting 3 days prior to tournament
-      let teeTimesStartDay = new Date(tournamentStartDate.getTime());
-      teeTimesStartDay.setDate(teeTimesStartDay.getDate() - 3);
 
-      schedule.scheduleJob({ start: teeTimesStartDay, end: tournamentStartDate, rule: '0 */5 * * *' }, function(){
-        api.getTeeTimes(tournament.id).then(data => {
-          email.sendEmail({
-            from: 'thegolfpoolhost@gmail.com',
-            to: 'abschultz20@gmail.com',
-            subject: 'Tee times was called',
-            text: 'Tee times was called'
-          })
-          if (data.groups.length) {
-            this.cancel();
-          }
-        });
-      });
-      console.log(`Created tee time scheduler: ${tournament.name} ${currentYear} starting ${teeTimesStartDay}`);
+    // Create scheduler to run every 5th hour, starting 3 days prior to tournament
+    let teeTimesStartDay = new Date(tournamentStartDate.getTime());
+    teeTimesStartDay.setDate(teeTimesStartDay.getDate() - 3);
 
-      let leaderboardStartDay = new Date(tournamentStartDate.getTime());
-      schedule.scheduleJob({ start: leaderboardStartDay, end: new Date('2019-03-18'), rule: '0 * * * *' }, function(){
+    schedule.scheduleJob({ start: teeTimesStartDay, end: tournamentStartDate, rule: '0 */5 * * *' }, function(){
+      api.getTeeTimes(tournament.id).then(data => {
         email.sendEmail({
           from: 'thegolfpoolhost@gmail.com',
           to: 'abschultz20@gmail.com',
-          subject: 'Leaderboard called',
-          text: 'Leaderboard called'
+          subject: 'Tee times was called',
+          text: 'Tee times was called'
         })
-        api.getTournamentLeaderboard(tournament.id).then(data => {
-          if (data.leaderboard.status === 'closed') {
-            this.cancel();
-          }
-        });
+        if (data.groups.length) {
+          this.cancel();
+        }
       });
-      console.log(`Created leaderboard scheduler: ${tournament.name} ${currentYear} starting ${leaderboardStartDay}`);
-    }
+    });
+    console.log(`Created tee time scheduler: ${tournament.name} ${currentYear} starting ${teeTimesStartDay}`);
+
+    let leaderboardStartDay = new Date(tournamentStartDate.getTime());
+    leaderboardStartDay.setHours(leaderboardStartDay.getHours() + 18);
+    schedule.scheduleJob({ start: leaderboardStartDay, rule: '0 * * * *' }, function(){
+      email.sendEmail({
+        from: 'thegolfpoolhost@gmail.com',
+        to: 'abschultz20@gmail.com',
+        subject: 'Leaderboard called',
+        text: 'Leaderboard called'
+      })
+      api.getTournamentLeaderboard(tournament.id).then(data => {
+        if (data.leaderboard.status === 'closed') {
+          this.cancel();
+        }
+      });
+    });
+    console.log(`Created leaderboard scheduler: ${tournament.name} ${currentYear} starting ${leaderboardStartDay}`);
+
   }
 }
 

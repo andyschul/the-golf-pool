@@ -69,16 +69,6 @@ app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => 
     }
     leaderboard = JSON.parse(leaderboard);
 
-    // let tdate = new Date(`${leaderboard.leaderboard.start_date}T00:00:00`)
-    // tdate.setDate(tdate.getDate() + 1);
-    // if (tdate > new Date()) {
-    //   res.json({
-    //     tournamentStatus: 'scheduled',
-    //     leaderboard: []
-    //   });
-    //   return next();
-    // }
-
     const users = await User.find({'tournaments.tournament_id': req.params.tournamentId});
     let players = await getAsync(`tournaments:${req.params.tournamentId}:players`);
 
