@@ -29,13 +29,13 @@ class TournamentGroupings extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/${this.props.auth.id}/tournaments/${this.props.match.params.id}/groups?full=true`);
+    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/groups?full=true`);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this.props.canSave(false);
-      this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/${this.props.auth.id}/tournaments/${this.props.match.params.id}/groups?full=true`);
+      this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/groups?full=true`);
     }
   }
 
@@ -53,7 +53,7 @@ class TournamentGroupings extends Component {
       }
     }
     let self = this;
-    axios.put(`${process.env.REACT_APP_API_URL}/api/users/${this.props.auth.id}/tournaments/${this.props.match.params.id}/picks`, {
+    axios.put(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/picks`, {
       picks: picks
     })
     .then(function (response) {
@@ -67,7 +67,7 @@ class TournamentGroupings extends Component {
   }
 
   cancelPicks() {
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/users/${this.props.auth.id}/tournaments/${this.props.match.params.id}/groups?full=true`);
+    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/groups?full=true`);
     this.props.canSave(false);
   }
 
@@ -143,7 +143,6 @@ TournamentGroupings.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.auth,
     groups: state.groups,
     hasErrored: state.groupsHasErrored,
     isLoading: state.groupsIsLoading,

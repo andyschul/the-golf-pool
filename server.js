@@ -4,6 +4,8 @@ const redis = require('redis')
 const cors = require('cors');
 const path = require('path');
 const {promisify} = require('util');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
 require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 require('./scheduler');
 
@@ -18,6 +20,20 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
+  }),
+  audience: process.env.AUTH0_CLIENT_ID,
+  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+  algorithms: ['RS256']
+});
+
+
 app.get('/api/schedule/:year', async (req, res, next) => {
   try {
     let schedule = await getAsync(`schedule:${req.params.year}`);
@@ -28,9 +44,9 @@ app.get('/api/schedule/:year', async (req, res, next) => {
   }
 });
 
-app.get('/api/users/:userId/tournaments/:tournamentId/groups', async (req, res, next) => {
+app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next) => {
   try {
-    const user = await User.findOne({ _id: req.params.userId });
+    const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
     let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId)[0];
     if (req.query['full']) {
       let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
@@ -46,18 +62,18 @@ app.get('/api/users/:userId/tournaments/:tournamentId/groups', async (req, res, 
   }
 });
 
-app.put('/api/users/:userId/tournaments/:tournamentId/picks', async (req, res, next) => {
+app.put('/api/tournaments/:tournamentId/picks', checkJwt, async (req, res, next) => {
   try {
-    const user = await User.findOne({ _id: req.params.userId });
-    user.tournaments = [{tournament_id: req.params.tournamentId, picks: req.body['picks']}]
-    user.save()
+    const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
+    // user.tournaments = [{tournament_id: req.params.tournamentId, picks: req.body['picks']}]
+    // user.save()
     res.json({tournaments: user.tournaments});
   } catch (e) {
     next(e)
   }
 });
 
-app.get('/api/tournaments/:tournamentId/leaderboard', async (req, res, next) => {
+app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res, next) => {
   try {
     let leaderboard = await getAsync(`tournaments:${req.params.tournamentId}:leaderboard`);
     if (!leaderboard) {

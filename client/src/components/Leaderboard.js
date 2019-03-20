@@ -156,7 +156,6 @@ Leaderboard.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.auth,
     leaderboard: state.leaderboard,
     hasErrored: state.leaderboardHasErrored,
     isLoading: state.leaderboardIsLoading

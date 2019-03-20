@@ -18,6 +18,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import { groupsFetchData } from '../actions';
+import auth0Client from '../Auth/Auth';
 
 const styles = {
   root: {
@@ -45,6 +46,10 @@ class MainBar extends React.Component {
     this.setState({
       [side]: open,
     });
+  };
+
+  handleLogout = () => {
+    auth0Client.logout();
   };
 
   render() {
@@ -82,12 +87,14 @@ class MainBar extends React.Component {
 
         <Divider />
         <List onClick={this.toggleDrawer('left', false)}>
-          {[{page: 'Home', route: '', icon: <HomeIcon />}, {page: 'Logout', route: 'logout', icon: <PersonIcon />}].map((item, index) => (
-            <ListItem button key={item.page} onClick={this.goTo.bind(this, item.route)}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.page} />
-            </ListItem>
-          ))}
+          <ListItem button onClick={this.goTo.bind(this, '')}>
+            <ListItemIcon><HomeIcon /></ListItemIcon>
+            <ListItemText primary='Home' />
+          </ListItem>
+          <ListItem button onClick={this.handleLogout}>
+            <ListItemIcon><PersonIcon /></ListItemIcon>
+            <ListItemText primary='Logout' />
+          </ListItem>
         </List>
       </div>
     );
@@ -120,7 +127,6 @@ MainBar.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.auth,
     schedule: state.schedule,
     hasErrored: state.scheduleHasErrored,
     isLoading: state.scheduleIsLoading

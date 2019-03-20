@@ -1,3 +1,6 @@
+import auth0Client from '../Auth/Auth';
+import axios from 'axios';
+
 export const selectPlayer = (id, groupIndex) => ({
   type: 'SELECT_PLAYER',
   id,
@@ -37,22 +40,18 @@ export function groupsFetchDataSuccess(groups) {
 }
 
 export function groupsFetchData(url) {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(groupsIsLoading(true));
-        fetch(url)
-            .then((response) => {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                dispatch(groupsIsLoading(false));
-                return response;
-            })
-            .then((response) => response.json())
-            .then((groups) => dispatch(groupsFetchDataSuccess(groups)))
-            .catch(() => dispatch(groupsHasErrored(true)));
+        let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
+        try {
+          const response = await axios.get(url, headers);
+          dispatch(groupsFetchDataSuccess(response.data))
+        } catch (error) {
+          dispatch(groupsHasErrored(true));
+        }
+        dispatch(groupsIsLoading(false));
     };
 }
-
 
 export function leaderboardHasErrored(bool) {
     return {
@@ -75,22 +74,18 @@ export function leaderboardFetchDataSuccess(leaderboard) {
 }
 
 export function leaderboardFetchData(url) {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(leaderboardIsLoading(true));
-        fetch(url)
-            .then((response) => {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                dispatch(leaderboardIsLoading(false));
-                return response;
-            })
-            .then((response) => response.json())
-            .then((leaderboard) => dispatch(leaderboardFetchDataSuccess(leaderboard)))
-            .catch(() => dispatch(leaderboardHasErrored(true)));
+        let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
+        try {
+          const response = await axios.get(url, headers);
+          dispatch(leaderboardFetchDataSuccess(response.leaderboard));
+        } catch (error) {
+          dispatch(leaderboardHasErrored(true));
+        }
+        dispatch(leaderboardIsLoading(false));
     };
 }
-
 
 export function scheduleHasErrored(bool) {
     return {
@@ -127,8 +122,3 @@ export function scheduleFetchData(url) {
             .catch(() => dispatch(scheduleHasErrored(true)));
     };
 }
-
-export const auth = (profile) => ({
-  type: 'SET_AUTH',
-  profile
-})

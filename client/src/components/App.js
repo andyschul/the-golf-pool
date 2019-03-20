@@ -12,10 +12,6 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
-  handleClick = () => {
-    this.props.auth.login();
-  };
-
   render() {
     const { classes } = this.props;
 

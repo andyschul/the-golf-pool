@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import withRoot from '../withRoot';
+import auth0Client from '../Auth/Auth';
 
 const styles = theme => ({
   root: {
@@ -14,7 +15,7 @@ const styles = theme => ({
 
 class Login extends React.Component {
   handleClick = () => {
-    this.props.auth.login();
+    auth0Client.login();
   };
 
   render() {
