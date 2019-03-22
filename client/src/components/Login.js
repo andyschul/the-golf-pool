@@ -15,7 +15,7 @@ const styles = theme => ({
 
 class Login extends React.Component {
   handleClick = () => {
-    auth0Client.login();
+    auth0Client.signIn();
   };
 
   render() {

@@ -19,6 +19,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import { groupsFetchData } from '../actions';
 import auth0Client from '../Auth/Auth';
+import history from '../history';
 
 const styles = {
   root: {
@@ -39,7 +40,7 @@ class MainBar extends React.Component {
   };
 
   goTo = (route) => {
-    this.props.history.replace(`/${route}`);
+    history.replace(`/${route}`);
   }
 
   toggleDrawer = (side, open) => () => {
@@ -49,7 +50,7 @@ class MainBar extends React.Component {
   };
 
   handleLogout = () => {
-    auth0Client.logout();
+    auth0Client.signOut();
   };
 
   render() {

@@ -1,15 +1,18 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom';
 import store from './store/configureStore';
-import { makeMainRoutes } from './routes';
+import Routes from './Routes';
+import history from './history';
 require('dotenv').config({path: '../.env', silent: process.env.NODE_ENV === 'production'});
-const routes = makeMainRoutes();
 
 
 render(
   <Provider store={store}>
-    {routes}
+    <Router history={history}>
+      <Routes />
+    </Router>
   </Provider>,
   document.getElementById('root')
 )
