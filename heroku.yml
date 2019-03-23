@@ -4,5 +4,6 @@ build:
     worker: server/Dockerfile
 run:
   worker:
-    command: node server.js
+    command:
+      - node server.js
     image: web
