@@ -2,3 +2,7 @@ build:
   docker:
     web: client/Dockerfile
     worker: server/Dockerfile
+run:
+  worker:
+    command: node server.js
+    image: web
