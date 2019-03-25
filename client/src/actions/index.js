@@ -79,7 +79,7 @@ export function leaderboardFetchData(url) {
         let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
         try {
           const response = await axios.get(url, headers);
-          dispatch(leaderboardFetchDataSuccess(response.leaderboard));
+          dispatch(leaderboardFetchDataSuccess(response.data));
         } catch (error) {
           dispatch(leaderboardHasErrored(true));
         }

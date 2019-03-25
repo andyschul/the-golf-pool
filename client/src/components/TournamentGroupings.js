@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import PlayerList from './PlayerList'
+import auth0Client from '../Auth/Auth';
 
 const styles = theme => ({
   root: {
@@ -53,8 +54,14 @@ class TournamentGroupings extends Component {
       }
     }
     let self = this;
-    axios.put(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/picks`, {
-      picks: picks
+
+    axios({
+      method: 'PUT',
+      url: `${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/picks`,
+      headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` },
+      data: {
+        picks: picks
+      }
     })
     .then(function (response) {
       self.props.canSave(false);

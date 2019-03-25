@@ -59,7 +59,7 @@ class MainBar extends React.Component {
     const sideList = (
       <div className={classes.list}>
         <List>
-          {schedule.map((tournament, index) => (
+          {schedule.tournaments.map((tournament, index) => (
             <ExpansionPanel key={tournament.id}>
               <ExpansionPanelSummary>
                 <ListItem>

@@ -20,7 +20,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
@@ -38,7 +37,12 @@ app.get('/api/schedule/:year', async (req, res, next) => {
   try {
     let schedule = await getAsync(`schedule:${req.params.year}`);
     schedule = JSON.parse(schedule)
-    res.json(schedule['tournaments']);
+    let currentTournament = schedule.tournaments.filter(t => {
+      let d = new Date(t.end_date);
+      d.setDate(d.getDate() + 7);
+      return d > new Date();
+    }).shift()
+    res.json({currentTournament: currentTournament || {}, tournaments: schedule['tournaments']});
   } catch (e) {
     next(e)
   }
@@ -65,8 +69,18 @@ app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next
 app.put('/api/tournaments/:tournamentId/picks', checkJwt, async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
-    // user.tournaments = [{tournament_id: req.params.tournamentId, picks: req.body['picks']}]
-    // user.save()
+
+    let schedule = await getAsync(`schedule:${(new Date()).getFullYear()}`);
+    schedule = JSON.parse(schedule)
+
+    let tournament = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop()
+    if (tournament) {
+      tournament.picks = req.body.picks
+    } else {
+      user.tournaments.push({tournament_id: req.params.tournamentId, picks: req.body.picks})
+    }
+
+    user.save()
     res.json({tournaments: user.tournaments});
   } catch (e) {
     next(e)

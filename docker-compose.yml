@@ -33,4 +33,9 @@ services:
       - /server/node_modules
     ports:
       - 5000:5000
+      - 9229:9229
+    command:
+      - node
+      - "--inspect-brk=0.0.0.0"
+      - "server.js"
     container_name: tgp_server

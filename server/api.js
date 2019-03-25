@@ -41,11 +41,12 @@ function getYearlySchedule() {
   let currentYear = (new Date()).getFullYear();
   return axios.get(`${process.env.SPORTS_RADAR_URI}/schedule/pga/${currentYear}/tournaments/schedule.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
     .then(function (response) {
-      let tournaments = response.data.tournaments.filter(x=>CONTESTS.includes(x.name)).map(x=>(
+      let tournaments = response.data.tournaments.filter(x=>CONTESTS.includes(x.name)).map(t=>(
         {
-          id: x.id,
-          name: x.name,
-          start_date: x.start_date
+          id: t.id,
+          name: t.name,
+          start_date: t.start_date,
+          end_date: t.end_date
         }
       ));
       client.set(`schedule:${currentYear}`, JSON.stringify({tournaments:tournaments}));

@@ -16,7 +16,7 @@ export function scheduleIsLoading(state = false, action) {
     }
 }
 
-export function schedule(state = [], action) {
+export function schedule(state = {currentTournament: {}, tournaments: []}, action) {
     switch (action.type) {
         case 'SCHEDULE_FETCH_DATA_SUCCESS':
             return action.schedule;

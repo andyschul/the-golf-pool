@@ -109,7 +109,7 @@ class PlayerList extends Component {
               } />
             </ListItem>
             {players.map(player => (
-              <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
+              <Player key={player.id} {...player} locked={false} onClick={() => selectPlayer(player.id, groupIndex)} />
             ))}
           </List>
         </Paper>

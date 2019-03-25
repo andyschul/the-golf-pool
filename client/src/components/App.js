@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 import withRoot from '../withRoot';
 import Layout from './Layout';
-const backgroundImage = 'https://wallpaperbro.com/img/4442.jpg';
+import history from '../history';
 
+const backgroundImage = 'https://wallpaperbro.com/img/4442.jpg';
 
 const styles = theme => ({
   background: {
@@ -37,21 +39,34 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
+
+  goTo = (route) => {
+    history.replace(`/${route}`);
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, schedule } = this.props;
 
     return (
       <Layout backgroundClassName={classes.background}>
         <Typography color="inherit" align="center" variant="h3" marked="center" className={classes.h3}>
-          The Masters
+          {schedule.currentTournament.name}
         </Typography>
         <Typography color="inherit" align="center" variant="h5" className={classes.h5}>
-          April 14-19
+          {schedule.currentTournament.start_date}
         </Typography>
-        <Button variant="contained" color="default" className={classes.button}>
+        <Button variant="contained"
+                color="default"
+                className={classes.button}
+                onClick={this.goTo.bind(this, `tournaments/${schedule.currentTournament.id}/groups`)}
+        >
           Make Picks
         </Button>
-        <Button variant="contained" color="primary" className={classes.button2}>
+        <Button variant="contained"
+                color="primary"
+                className={classes.button2}
+                onClick={this.goTo.bind(this, `tournaments/${schedule.currentTournament.id}/leaderboard`)}
+        >
           Leaderboard
         </Button>
       </Layout>
@@ -63,4 +78,12 @@ App.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withRoot(withStyles(styles)(App));
+const mapStateToProps = (state) => {
+  return {
+    schedule: state.schedule,
+    hasErrored: state.scheduleHasErrored,
+    isLoading: state.scheduleIsLoading
+  };
+};
+
+export default connect(mapStateToProps, null)(withRoot(withStyles(styles)(App)));
