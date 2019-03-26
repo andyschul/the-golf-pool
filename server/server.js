@@ -216,9 +216,23 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
       :
       leaderboardData.sort((a,b) => (a.totalScore > b.totalScore) ? 1 : ((b.totalScore > a.totalScore) ? -1 : 0));
 
+    let l = leaderboard.leaderboard.reduce((obj, item) => {
+      obj[item.id] = {...item, picks: []};
+      return obj;
+    }, {})
+    let pos = 1;
+    for (let p of leaderboardData) {
+      for (let pick of p.picks) {
+        l[pick.id].picks.push({position: pos, ...p})
+      }
+      pos++;
+    }
+
+    let tournamentLeaderboard = leaderboard.leaderboard.map(pl => l[pl.id])
     retJson = {
       tournamentStatus: leaderboard.leaderboard.status,
-      leaderboard: leaderboardData
+      leaderboard: leaderboardData,
+      tournamentLeaderboard: tournamentLeaderboard
     }
     res.json(retJson);
   } catch (e) {
