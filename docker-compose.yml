@@ -36,6 +36,6 @@ services:
       - 9229:9229
     command:
       - node
-      - "--inspect-brk=0.0.0.0"
+      - "--inspect=0.0.0.0"
       - "server.js"
     container_name: tgp_server

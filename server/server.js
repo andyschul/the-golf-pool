@@ -48,6 +48,76 @@ app.get('/api/schedule/:year', async (req, res, next) => {
   }
 });
 
+app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
+  try {
+    let schedule = await getAsync(`schedule:${req.params.year}`);
+    schedule = JSON.parse(schedule)
+
+    let tournamentPlayerData = {}
+    let tournamentIds = [];
+    for (let t of schedule.tournaments) {
+      let y = new Date(t.start_date).getFullYear();
+      if (y === parseInt(req.params.year)) {
+        players = await getAsync(`tournaments:${t.id}:players`);
+        tournamentPlayerData[t.id] = JSON.parse(players);
+        tournamentIds.push(t.id)
+      }
+    }
+
+    User.find({}, function(err, users) {
+      let leaderboard = [];
+
+      for (let user of users) {
+        userTournaments = user.tournaments.filter(t => tournamentIds.includes(t.tournament_id))
+
+        let tData = []
+        for (let tour of userTournaments) {
+          let picks = tour.picks.map(player => (
+            {
+              id: tournamentPlayerData[tour.tournament_id][player.id].id,
+              first_name: tournamentPlayerData[tour.tournament_id][player.id].first_name,
+              last_name: tournamentPlayerData[tour.tournament_id][player.id].last_name,
+              position: tournamentPlayerData[tour.tournament_id][player.id].position,
+              score: tournamentPlayerData[tour.tournament_id][player.id].score,
+              status: tournamentPlayerData[tour.tournament_id][player.id].status || null,
+              money: tournamentPlayerData[tour.tournament_id][player.id].money || null,
+              strokes: tournamentPlayerData[tour.tournament_id][player.id].strokes,
+            }
+          ));
+
+          reducedPicks = picks.reduce((accumulator, item) => {
+            accumulator['totalMoney'] = (accumulator['totalMoney'] || 0) + item['money'] || 0;
+            accumulator['totalScore'] = (accumulator['totalScore'] || 0) + item['score'];
+            accumulator['totalPosition'] = (accumulator['totalPosition'] || 0) + item['position'];
+            return accumulator;
+          }, {});
+          tData.push({
+            name: tour.name,
+            id: tour.tournament_id,
+            ...reducedPicks
+          })
+        }
+        yData = tData.reduce((accumulator, item) => {
+          accumulator['yearlyTotalMoney'] = (accumulator['yearlyTotalMoney'] || 0) + item['totalMoney'] || 0;
+          accumulator['yearlyTotalScore'] = (accumulator['yearlyTotalScore'] || 0) + item['totalScore'];
+          accumulator['yearlyTotalPosition'] = (accumulator['yearlyTotalPosition'] || 0) + item['totalPosition'];
+          return accumulator;
+        }, {});
+
+        leaderboard.push({
+          username: user._doc.username,
+          tournaments: tData,
+          ...yData,
+        })
+      }
+
+      res.send(leaderboard);
+    });
+  } catch (e) {
+    next(e)
+  }
+});
+
 app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
@@ -70,14 +140,18 @@ app.put('/api/tournaments/:tournamentId/picks', checkJwt, async (req, res, next)
   try {
     const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
 
-    let schedule = await getAsync(`schedule:${(new Date()).getFullYear()}`);
-    schedule = JSON.parse(schedule)
+    let cachedTournament = await getAsync(`tournaments:${req.params.tournamentId}`);
+    cachedTournament = JSON.parse(cachedTournament);
 
-    let tournament = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop()
-    if (tournament) {
-      tournament.picks = req.body.picks
+    let userTournament = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop()
+    if (userTournament) {
+      userTournament.picks = req.body.picks
     } else {
-      user.tournaments.push({tournament_id: req.params.tournamentId, picks: req.body.picks})
+      user.tournaments.push({
+        tournament_id: req.params.tournamentId,
+        name: cachedTournament.name,
+        picks: req.body.picks
+      })
     }
 
     user.save()
@@ -101,23 +175,21 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
 
     const users = await User.find({'tournaments.tournament_id': req.params.tournamentId});
     let players = await getAsync(`tournaments:${req.params.tournamentId}:players`);
-
     players = JSON.parse(players);
-    let r = players.players;
     let leaderboardData = []
 
     leaderboardData = users.map(user => {
-      let tournamentPicks = user._doc.tournaments.filter(t => t.tournament_id === req.params.tournamentId)[0].picks;
-      picks = tournamentPicks.map(player => (
+      let tournament = user._doc.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
+      picks = tournament.picks.map(player => (
         {
-          id: r[player._doc.id].id,
-          first_name: r[player._doc.id].first_name,
-          last_name: r[player._doc.id].last_name,
-          position: r[player._doc.id].position,
-          score: r[player._doc.id].score,
-          status: r[player._doc.id].status || null,
-          money: r[player._doc.id].money || null,
-          strokes: r[player._doc.id].strokes,
+          id: players[player.id].id,
+          first_name: players[player.id].first_name,
+          last_name: players[player.id].last_name,
+          position: players[player.id].position,
+          score: players[player.id].score,
+          status: players[player.id].status || null,
+          money: players[player.id].money || null,
+          strokes: players[player.id].strokes,
         }
       ));
 

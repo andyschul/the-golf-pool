@@ -11,6 +11,8 @@ const styles = theme => ({
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
+    marginRight: -8,
+    marginLeft: -8,
     [theme.breakpoints.up('sm')]: {
       height: '80vh',
       minHeight: 500,
@@ -34,9 +36,6 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.black,
     opacity: 0.3,
     zIndex: -1,
-    [theme.breakpoints.up('md')]: {
-      minHeight: 800,
-    },
   },
   background: {
     position: 'absolute',
@@ -47,9 +46,6 @@ const styles = theme => ({
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     zIndex: -2,
-    [theme.breakpoints.up('md')]: {
-      minHeight: 800,
-    },
   },
 });
 

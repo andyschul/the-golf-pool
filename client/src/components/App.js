@@ -5,12 +5,29 @@ import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import withRoot from '../withRoot';
+import { yearlyLeaderboardExpandRow } from '../actions';
 import Layout from './Layout';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
 import history from '../history';
 
 const backgroundImage = 'https://wallpaperbro.com/img/4442.jpg';
 
+
 const styles = theme => ({
+  root: {
+    width: '100%',
+    marginTop: theme.spacing.unit * 9,
+    overflowX: 'auto',
+  },
+  table: {
+    minWidth: 300,
+  },
   background: {
     backgroundImage: `url(${backgroundImage})`,
     backgroundColor: '#39ae50', // Average color of the background image.
@@ -41,13 +58,14 @@ const styles = theme => ({
 class App extends React.Component {
 
   goTo = (route) => {
-    history.replace(`/${route}`);
+    history.push(`/${route}`);
   }
 
   render() {
-    const { classes, schedule } = this.props;
+    const { classes, schedule, yearlyLeaderboard, expandRow } = this.props;
 
     return (
+      <div>
       <Layout backgroundClassName={classes.background}>
         <Typography color="inherit" align="center" variant="h3" marked="center" className={classes.h3}>
           {schedule.currentTournament.name}
@@ -70,6 +88,59 @@ class App extends React.Component {
           Leaderboard
         </Button>
       </Layout>
+
+      <Paper className={classes.root}>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell style={{paddingRight: 10, width: 5}}></TableCell>
+              <TableCell>Username</TableCell>
+              <TableCell align="right">Total Money</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {yearlyLeaderboard.map((user, idx) => (
+              <React.Fragment key={user.id}>
+                <TableRow selected={user.expanded} onClick={event => expandRow(user.id)}>
+                  <TableCell component="th" scope="row" style={{paddingRight: 10, width: 5}}>
+                    {idx+1}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    <Typography noWrap>
+                       {user.username}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">{user.yearlyTotalMoney}</TableCell>
+                </TableRow>
+                {user.expanded && (
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell align="right">Money</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {user.tournaments.map(tour => (
+                            <TableRow key={tour.id}>
+                              <TableCell>{tour.name}</TableCell>
+                              <TableCell align="right">{tour.totalMoney}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableCell>
+                  </TableRow>
+                )}
+
+              </React.Fragment>
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
+      </div>
     );
   }
 }
@@ -81,9 +152,14 @@ App.propTypes = {
 const mapStateToProps = (state) => {
   return {
     schedule: state.schedule,
-    hasErrored: state.scheduleHasErrored,
-    isLoading: state.scheduleIsLoading
+    yearlyLeaderboard: state.yearlyLeaderboard,
   };
 };
 
-export default connect(mapStateToProps, null)(withRoot(withStyles(styles)(App)));
+const mapDispatchToProps = (dispatch) => {
+    return {
+        expandRow: (id) => dispatch(yearlyLeaderboardExpandRow(id)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(App));

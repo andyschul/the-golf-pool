@@ -50,6 +50,9 @@ function getYearlySchedule() {
         }
       ));
       client.set(`schedule:${currentYear}`, JSON.stringify({tournaments:tournaments}));
+      for (let tournament of tournaments) {
+        client.set(`tournaments:${tournament.id}`, JSON.stringify(tournament));
+      }
       return {tournaments: tournaments};
     })
     .catch(function (error) {
@@ -83,7 +86,7 @@ function getTournamentLeaderboard(tournamentId) {
     .then(function (response) {
       let leaderboard = response.data;
       client.set(`tournaments:${tournamentId}:leaderboard`, JSON.stringify({leaderboard:leaderboard}));
-      client.set(`tournaments:${tournamentId}:players`, JSON.stringify({players: createPlayers(leaderboard)}));
+      client.set(`tournaments:${tournamentId}:players`, JSON.stringify(createPlayers(leaderboard)));
       return {leaderboard: leaderboard};
     })
     .catch(function (error) {

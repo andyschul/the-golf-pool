@@ -12,6 +12,11 @@ export const leaderboardExpandRow = (id) => ({
   id
 })
 
+export const yearlyLeaderboardExpandRow = (id) => ({
+  type: 'YEARLY_LEADERBOARD_EXPAND_ROW',
+  id
+})
+
 export function groupsHasErrored(bool) {
     return {
         type: 'GROUPS_HAS_ERRORED',
@@ -84,6 +89,40 @@ export function leaderboardFetchData(url) {
           dispatch(leaderboardHasErrored(true));
         }
         dispatch(leaderboardIsLoading(false));
+    };
+}
+
+export function yearlyLeaderboardHasErrored(bool) {
+    return {
+        type: 'YEARLY_LEADERBOARD_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+export function yearlyLeaderboardIsLoading(bool) {
+    return {
+        type: 'YEARLY_LEADERBOARD_IS_LOADING',
+        isLoading: bool
+    };
+}
+
+export function yearlyLeaderboardFetchDataSuccess(yearlyLeaderboard) {
+    return {
+        type: 'YEARLY_LEADERBOARD_FETCH_DATA_SUCCESS',
+        yearlyLeaderboard
+    };
+}
+
+export function yearlyLeaderboardFetchData(url) {
+    return async (dispatch) => {
+        dispatch(yearlyLeaderboardIsLoading(true));
+        let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
+        try {
+          const response = await axios.get(url, headers);
+          dispatch(yearlyLeaderboardFetchDataSuccess(response.data));
+        } catch (error) {
+          dispatch(yearlyLeaderboardHasErrored(true));
+        }
+        dispatch(yearlyLeaderboardIsLoading(false));
     };
 }
 

@@ -31,3 +31,16 @@ export function leaderboard(state = {status: '', leaderboard: []}, action) {
             return state;
     }
 }
+
+export function yearlyLeaderboard(state = [], action) {
+    switch (action.type) {
+        case 'YEARLY_LEADERBOARD_FETCH_DATA_SUCCESS':
+            return action.yearlyLeaderboard;
+        case 'YEARLY_LEADERBOARD_EXPAND_ROW':
+            return state.yearlyLeaderboard.map(item =>
+              item.id === action.id ? { ...item, expanded: !item.expanded } : item
+            )
+        default:
+            return state;
+    }
+}
