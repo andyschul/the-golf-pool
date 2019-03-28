@@ -126,7 +126,7 @@ app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next
       let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
       groups = JSON.parse(groups);
       let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
-      let retJson = groups ? groups['groups'].map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, selected: true } : { ...player, selected: false })) : [];
+      let retJson = groups.length ? groups.map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, selected: true } : { ...player, selected: false })) : [];
       res.json(retJson);
     } else {
       res.json(usertournamentData);
@@ -211,14 +211,28 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
       }
     })
 
-    leaderboard.leaderboard.status === 'closed' ?
+    leaderboard.status === 'closed' ?
       leaderboardData.sort((a,b) => (a.totalMoney > b.totalMoney) ? -1 : ((b.totalMoney > a.totalMoney) ? 1 : 0))
       :
       leaderboardData.sort((a,b) => (a.totalScore > b.totalScore) ? 1 : ((b.totalScore > a.totalScore) ? -1 : 0));
 
+    let l = leaderboard.leaderboard.reduce((obj, item) => {
+      obj[item.id] = {...item, picks: []};
+      return obj;
+    }, {})
+    let pos = 1;
+    for (let p of leaderboardData) {
+      for (let pick of p.picks) {
+        l[pick.id].picks.push({position: pos, ...p})
+      }
+      pos++;
+    }
+
+    let tournamentLeaderboard = leaderboard.leaderboard.map(pl => l[pl.id])
     retJson = {
-      tournamentStatus: leaderboard.leaderboard.status,
-      leaderboard: leaderboardData
+      tournamentStatus: leaderboard.status,
+      leaderboard: leaderboardData,
+      tournamentLeaderboard: tournamentLeaderboard
     }
     res.json(retJson);
   } catch (e) {

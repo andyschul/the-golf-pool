@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { leaderboardExpandRow } from '../actions';
+import { leaderboardExpandRow, tournamentLeaderboardExpandRow } from '../actions';
 import { connect } from 'react-redux';
 import { leaderboardFetchData } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
@@ -58,7 +58,7 @@ class Leaderboard extends Component {
   }
 
   render() {
-    const { classes, leaderboard, isLoading, expandRow } = this.props;
+    const { classes, leaderboard, isLoading, expandLeaderboardRow, expandTournamentLeaderboardRow } = this.props;
     if (isLoading) {
       return (
         <div className={classes.root}>
@@ -71,6 +71,8 @@ class Leaderboard extends Component {
       return (
         <React.Fragment>
         {leaderboard.leaderboard.length ?
+          <div>
+          <React.Fragment>
           <Paper className={classes.root}>
             <Table className={classes.table}>
               <TableHead>
@@ -87,7 +89,7 @@ class Leaderboard extends Component {
               <TableBody>
                 {leaderboard.leaderboard.map((user, idx) => (
                   <React.Fragment key={user.id}>
-                    <TableRow selected={user.expanded} onClick={event => expandRow(user.id)}>
+                    <TableRow selected={user.expanded} onClick={event => expandLeaderboardRow(user.id)}>
                       <TableCell component="th" scope="row" style={{paddingRight: 10, width: 5}}>
                         {idx+1}
                       </TableCell>
@@ -138,6 +140,81 @@ class Leaderboard extends Component {
               </TableBody>
             </Table>
           </Paper>
+
+          </React.Fragment>
+          <React.Fragment>
+
+          <Paper className={classes.root}>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{paddingRight: 10, width: 5}}></TableCell>
+                  <TableCell>Name</TableCell>
+                  {leaderboard.tournamentStatus === 'closed' && (
+                    <TableCell align="right">Money</TableCell>
+                  )}
+                  <TableCell align="right">Count</TableCell>
+                  <TableCell align="right">Score</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {leaderboard.tournamentLeaderboard.map((player, idx) => (
+                  <React.Fragment key={player.id}>
+                    <TableRow selected={player.expanded} onClick={event => expandTournamentLeaderboardRow(player.id)}>
+                      <TableCell component="th" scope="row" style={{paddingRight: 10, width: 5}}>
+                        {player.position}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Typography noWrap>
+                           {player.first_name} {player.last_name}
+                        </Typography>
+                      </TableCell>
+                      {leaderboard.tournamentStatus === 'closed' && (
+                        <TableCell align="right">{this.formatMoney(player.money)}</TableCell>
+                      )}
+                      <TableCell align="right">{player.picks.length}</TableCell>
+                      <TableCell align="right">{this.formatScore(player.score)}</TableCell>
+                    </TableRow>
+                    {player.expanded && (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell style={{paddingRight: 10, width: 5}}>Pos</TableCell>
+                                <TableCell>Name</TableCell>
+                                {leaderboard.tournamentStatus === 'closed' && (
+                                  <TableCell>Money</TableCell>
+                                )}
+                                <TableCell align="right">Avg Position</TableCell>
+                                <TableCell align="right">Score</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {player.picks.map(user => (
+                                <TableRow key={user.id}>
+                                  <TableCell style={{paddingRight: 10, width: 5}}>{user.position}</TableCell>
+                                  <TableCell>{user.username}</TableCell>
+                                  {leaderboard.tournamentStatus === 'closed' && (
+                                    <TableCell>{this.formatMoney(user.totalMoney) || 0}</TableCell>
+                                  )}
+                                  <TableCell align="right">{user.totalPosition}</TableCell>
+                                  <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableCell>
+                      </TableRow>
+                    )}
+
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+          </React.Fragment>
+          </div>
           :
           <Typography variant="h6" gutterBottom className={classes.root}>
             Leaderboard will be available at 7PM on day 1 of the tournament
@@ -165,7 +242,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url)),
-        expandRow: (id) => dispatch(leaderboardExpandRow(id)),
+        expandLeaderboardRow: (id) => dispatch(leaderboardExpandRow(id)),
+        expandTournamentLeaderboardRow: (id) => dispatch(tournamentLeaderboardExpandRow(id)),
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Leaderboard));

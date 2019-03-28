@@ -12,6 +12,11 @@ export const leaderboardExpandRow = (id) => ({
   id
 })
 
+export const tournamentLeaderboardExpandRow = (id) => ({
+  type: 'TOURNAMENT_LEADERBOARD_EXPAND_ROW',
+  id
+})
+
 export const yearlyLeaderboardExpandRow = (id) => ({
   type: 'YEARLY_LEADERBOARD_EXPAND_ROW',
   id

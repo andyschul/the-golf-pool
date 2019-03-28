@@ -69,14 +69,14 @@ function getTeeTimes(tournamentId) {
         let pairings = response.data.round.courses[0].pairings;
         let groups = groupPairings(pairings, 10);
 
-        client.set(`tournaments:${tournamentId}:groups`, JSON.stringify({groups:groups}));
-        return {groups: groups};
+        client.set(`tournaments:${tournamentId}:groups`, JSON.stringify(groups));
+        return groups;
       }
-      return {groups: []}
+      return [];
     })
     .catch(function (error) {
       console.log('error getTeeTimes', error);
-      return {groups: []};
+      return [];
     });
 }
 
@@ -85,9 +85,9 @@ function getTournamentLeaderboard(tournamentId) {
   return axios.get(`${process.env.SPORTS_RADAR_URI}/leaderboard/pga/${currentYear}/tournaments/${tournamentId}/leaderboard.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
     .then(function (response) {
       let leaderboard = response.data;
-      client.set(`tournaments:${tournamentId}:leaderboard`, JSON.stringify({leaderboard:leaderboard}));
+      client.set(`tournaments:${tournamentId}:leaderboard`, JSON.stringify(leaderboard));
       client.set(`tournaments:${tournamentId}:players`, JSON.stringify(createPlayers(leaderboard)));
-      return {leaderboard: leaderboard};
+      return leaderboard;
     })
     .catch(function (error) {
       console.log('error getTeeTimes', error);

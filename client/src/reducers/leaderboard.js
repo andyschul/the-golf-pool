@@ -16,7 +16,7 @@ export function leaderboardIsLoading(state = false, action) {
     }
 }
 
-export function leaderboard(state = {status: '', leaderboard: []}, action) {
+export function leaderboard(state = {view: 'group', tournamentStatus: '', leaderboard: [], tournamentLeaderboard: []}, action) {
     switch (action.type) {
         case 'LEADERBOARD_FETCH_DATA_SUCCESS':
             return action.leaderboard;
@@ -24,6 +24,13 @@ export function leaderboard(state = {status: '', leaderboard: []}, action) {
             return {
               ...state,
               leaderboard: state.leaderboard.map(item =>
+                item.id === action.id ? { ...item, expanded: !item.expanded } : item
+              )
+            }
+        case 'TOURNAMENT_LEADERBOARD_EXPAND_ROW':
+            return {
+              ...state,
+              tournamentLeaderboard: state.tournamentLeaderboard.map(item =>
                 item.id === action.id ? { ...item, expanded: !item.expanded } : item
               )
             }
@@ -37,7 +44,7 @@ export function yearlyLeaderboard(state = [], action) {
         case 'YEARLY_LEADERBOARD_FETCH_DATA_SUCCESS':
             return action.yearlyLeaderboard;
         case 'YEARLY_LEADERBOARD_EXPAND_ROW':
-            return state.yearlyLeaderboard.map(item =>
+            return state.map(item =>
               item.id === action.id ? { ...item, expanded: !item.expanded } : item
             )
         default:
