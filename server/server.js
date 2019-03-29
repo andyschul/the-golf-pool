@@ -39,7 +39,7 @@ app.get('/api/schedule/:year', async (req, res, next) => {
     schedule = JSON.parse(schedule)
     let currentTournament = schedule.tournaments.filter(t => {
       let d = new Date(t.end_date);
-      d.setDate(d.getDate() + 7);
+      d.setDate(d.getDate() + 27);
       return d > new Date();
     }).shift()
     res.json({currentTournament: currentTournament || {}, tournaments: schedule['tournaments']});
@@ -91,6 +91,7 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
             accumulator['totalPosition'] = (accumulator['totalPosition'] || 0) + item['position'];
             return accumulator;
           }, {});
+          reducedPicks['avgPosition'] = reducedPicks['totalPosition'] / picks.length;
           tData.push({
             name: tour.name,
             id: tour.tournament_id,

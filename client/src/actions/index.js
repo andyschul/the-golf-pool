@@ -7,6 +7,11 @@ export const selectPlayer = (id, groupIndex) => ({
   groupIndex
 })
 
+export const leaderboardView = (id) => ({
+  type: 'LEADERBOARD_VIEW',
+  id
+})
+
 export const leaderboardExpandRow = (id) => ({
   type: 'LEADERBOARD_EXPAND_ROW',
   id

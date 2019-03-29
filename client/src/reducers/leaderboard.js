@@ -27,6 +27,11 @@ export function leaderboard(state = {view: 'group', tournamentStatus: '', leader
                 item.id === action.id ? { ...item, expanded: !item.expanded } : item
               )
             }
+        case 'LEADERBOARD_VIEW':
+            return {
+              ...state,
+              view: action.id
+            }
         case 'TOURNAMENT_LEADERBOARD_EXPAND_ROW':
             return {
               ...state,
