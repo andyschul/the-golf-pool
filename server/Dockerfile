@@ -2,6 +2,8 @@ FROM node:11-alpine
 
 WORKDIR /server
 
+RUN npm install -g nodemon
+
 COPY package.json ./
 COPY package-lock.json ./
 
