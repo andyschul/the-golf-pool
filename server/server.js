@@ -86,9 +86,10 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
           ));
 
           reducedPicks = picks.reduce((accumulator, item) => {
-            accumulator['totalMoney'] = (accumulator['totalMoney'] || 0) + item['money'] || 0;
-            accumulator['totalScore'] = (accumulator['totalScore'] || 0) + item['score'];
-            accumulator['totalPosition'] = (accumulator['totalPosition'] || 0) + item['position'];
+            accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money || 0;
+            accumulator.totalMadeCuts = (accumulator.totalMadeCuts || 0) + (item.status === 'CUT' ? 0 : 1);
+            accumulator.totalScore = (accumulator.totalScore || 0) + item.score;
+            accumulator.totalPosition = (accumulator.totalPosition || 0) + item.position;
             return accumulator;
           }, {});
           reducedPicks['avgPosition'] = reducedPicks['totalPosition'] / picks.length;
@@ -99,19 +100,21 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
           })
         }
         yData = tData.reduce((accumulator, item) => {
-          accumulator['yearlyTotalMoney'] = (accumulator['yearlyTotalMoney'] || 0) + item['totalMoney'] || 0;
-          accumulator['yearlyTotalScore'] = (accumulator['yearlyTotalScore'] || 0) + item['totalScore'];
-          accumulator['yearlyTotalPosition'] = (accumulator['yearlyTotalPosition'] || 0) + item['totalPosition'];
+          accumulator.yearlyTotalMoney = (accumulator.yearlyTotalMoney || 0) + item.totalMoney || 0;
+          accumulator.yearlyTotalMadeCuts = (accumulator.yearlyTotalMadeCuts || 0) + item.totalMadeCuts || 0;
+          accumulator.yearlyTotalScore = (accumulator.yearlyTotalScore || 0) + item.totalScore;
+          accumulator.yearlyTotalPosition = (accumulator.yearlyTotalPosition || 0) + item.totalPosition;
           return accumulator;
         }, {});
 
         leaderboard.push({
+          id: user.id,
           username: user._doc.username,
           tournaments: tData,
           ...yData,
         })
       }
-
+      leaderboard.sort((a,b) => (a.yearlyTotalMoney > b.yearlyTotalMoney) ? -1 : ((b.yearlyTotalMoney > a.yearlyTotalMoney) ? 1 : 0))
       res.send(leaderboard);
     });
   } catch (e) {
@@ -151,6 +154,7 @@ app.put('/api/tournaments/:tournamentId/picks', checkJwt, async (req, res, next)
       user.tournaments.push({
         tournament_id: req.params.tournamentId,
         name: cachedTournament.name,
+        start_date: cachedTournament.start_date,
         picks: req.body.picks
       })
     }
@@ -197,12 +201,13 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
       picks.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));
 
       reducedPicks = picks.reduce((accumulator, item) => {
-        accumulator['totalMoney'] = (accumulator['totalMoney'] || 0) + item['money'] || 0;
-        accumulator['totalScore'] = (accumulator['totalScore'] || 0) + item['score'];
-        accumulator['totalPosition'] = (accumulator['totalPosition'] || 0) + item['position'];
+        accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money || 0;
+        accumulator.totalMadeCuts = (accumulator.totalMadeCuts || 0) + (item.status === 'CUT' ? 0 : 1);
+        accumulator.totalScore = (accumulator.totalScore || 0) + item.score;
+        accumulator.totalPosition = (accumulator.totalPosition || 0) + item.position;
         return accumulator;
       }, {});
-      reducedPicks['avgPosition'] = reducedPicks['totalPosition'] / picks.length;
+      reducedPicks.avgPosition = reducedPicks.totalPosition / picks.length;
 
       return {
         id: user.id,

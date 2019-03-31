@@ -13,7 +13,7 @@ import Tab from '@material-ui/core/Tab';
 
 function TabContainer(props) {
   return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
+    <Typography component="div">
       {props.children}
     </Typography>
   );
@@ -63,7 +63,7 @@ class Leaderboard extends Component {
       return (
         <React.Fragment>
         {leaderboard.leaderboard.length ?
-          <Paper className={classes.root}>
+          <div className={classes.root}>
             <Tabs
               value={value}
               onChange={this.handleChange}
@@ -76,7 +76,7 @@ class Leaderboard extends Component {
             </Tabs>
             {value === 0 && <TabContainer><GroupLeaderboard /></TabContainer>}
             {value === 1 && <TabContainer><TournamentLeaderboard /></TabContainer>}
-          </Paper>
+          </div>
           :
           <Typography variant="h6" gutterBottom className={classes.root}>
             Leaderboard will be available at 7PM on day 1 of the tournament

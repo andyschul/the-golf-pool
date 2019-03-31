@@ -90,8 +90,9 @@ class TournamentLeaderboard extends Component {
                                     {leaderboard.tournamentStatus === 'closed' && (
                                       <TableCell>Money</TableCell>
                                     )}
+                                    <TableCell align="right">Made Cuts</TableCell>
                                     <TableCell align="right">Avg Position</TableCell>
-                                    <TableCell align="right">Score</TableCell>
+                                    <TableCell align="right">Combined Score</TableCell>
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -102,6 +103,7 @@ class TournamentLeaderboard extends Component {
                                       {leaderboard.tournamentStatus === 'closed' && (
                                         <TableCell>{this.formatMoney(user.totalMoney) || 0}</TableCell>
                                       )}
+                                      <TableCell align="right">{user.totalMadeCuts || '-'}</TableCell>
                                       <TableCell align="right">{user.avgPosition}</TableCell>
                                       <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
                                     </TableRow>

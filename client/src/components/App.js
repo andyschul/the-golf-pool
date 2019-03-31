@@ -57,6 +57,11 @@ const styles = theme => ({
 
 class App extends React.Component {
 
+  formatMoney(money) {
+    if (!money) return 'CUT';
+    return '$'+money.toLocaleString();
+  }
+
   goTo = (route) => {
     history.push(`/${route}`);
   }
@@ -95,6 +100,7 @@ class App extends React.Component {
             <TableRow>
               <TableCell style={{paddingRight: 10, width: 5}}></TableCell>
               <TableCell>Username</TableCell>
+              <TableCell align="right">Made Cuts</TableCell>
               <TableCell align="right">Total Money</TableCell>
             </TableRow>
           </TableHead>
@@ -110,7 +116,8 @@ class App extends React.Component {
                        {user.username}
                     </Typography>
                   </TableCell>
-                  <TableCell align="right">{user.yearlyTotalMoney}</TableCell>
+                  <TableCell align="right">{user.yearlyTotalMadeCuts}</TableCell>
+                  <TableCell align="right">{this.formatMoney(user.yearlyTotalMoney)}</TableCell>
                 </TableRow>
                 {user.expanded && (
                   <TableRow>
@@ -119,6 +126,7 @@ class App extends React.Component {
                         <TableHead>
                           <TableRow>
                             <TableCell>Name</TableCell>
+                            <TableCell align="right">Made Cuts</TableCell>
                             <TableCell align="right">Money</TableCell>
                           </TableRow>
                         </TableHead>
@@ -126,7 +134,8 @@ class App extends React.Component {
                           {user.tournaments.map(tour => (
                             <TableRow key={tour.id}>
                               <TableCell>{tour.name}</TableCell>
-                              <TableCell align="right">{tour.totalMoney}</TableCell>
+                              <TableCell align="right">{tour.totalMadeCuts}</TableCell>
+                              <TableCell align="right">{this.formatMoney(tour.totalMoney)}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>

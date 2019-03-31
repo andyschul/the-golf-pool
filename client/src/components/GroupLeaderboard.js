@@ -71,6 +71,7 @@ class GroupLeaderboard extends Component {
                   {leaderboard.tournamentStatus === 'closed' && (
                     <TableCell align="right">Money</TableCell>
                   )}
+                  <TableCell align="right">Made Cuts</TableCell>
                   <TableCell align="right">Avg Position</TableCell>
                   <TableCell align="right">Combined Score</TableCell>
                 </TableRow>
@@ -90,12 +91,13 @@ class GroupLeaderboard extends Component {
                       {leaderboard.tournamentStatus === 'closed' && (
                         <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
                       )}
+                      <TableCell align="right">{user.totalMadeCuts}</TableCell>
                       <TableCell align="right">{user.avgPosition}</TableCell>
                       <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
                     </TableRow>
                     {user.expanded && (
                       <TableRow>
-                        <TableCell colSpan={5}>
+                        <TableCell colSpan={6}>
                           <Table>
                             <TableHead>
                               <TableRow>
