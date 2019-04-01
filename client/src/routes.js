@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import App from './components/App';
+import Profile from './components/Profile';
 import Leaderboard from './components/Leaderboard';
 import TournamentGroupings from './components/TournamentGroupings';
 import MainBar from './components/MainBar';
@@ -50,6 +51,7 @@ class Routes extends Component {
         <Route exact path='/callback' component={Callback}/>
         <Route path='/' component={MainBar} />
         <Route exact path='/' component={App} />
+        <SecuredRoute path="/profile" component={Profile} checkingSession={this.state.checkingSession} />
         <SecuredRoute path="/tournaments/:id/groups" component={TournamentGroupings} checkingSession={this.state.checkingSession} />
         <SecuredRoute path="/tournaments/:id/leaderboard" component={Leaderboard} checkingSession={this.state.checkingSession} />
       </div>

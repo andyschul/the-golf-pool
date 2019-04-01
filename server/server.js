@@ -48,6 +48,34 @@ app.get('/api/schedule/:year', async (req, res, next) => {
   }
 });
 
+app.get('/api/profile', checkJwt, async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
+    res.json({
+      firstName: user.first_name,
+      lastName: user.last_name,
+    })
+  } catch (e) {
+    next(e)
+  }
+});
+
+app.put('/api/profile', checkJwt, async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
+    user.first_name = req.body.firstName
+    user.last_name = req.body.lastName
+    user.save()
+
+    res.json({
+      firstName: user.first_name,
+      lastName: user.last_name,
+    })
+  } catch (e) {
+    next(e)
+  }
+});
+
 app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
   try {
     let schedule = await getAsync(`schedule:${req.params.year}`);
@@ -110,6 +138,8 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
         leaderboard.push({
           id: user.id,
           username: user._doc.username,
+          first_name: user._doc.first_name,
+          last_name: user._doc.last_name,
           tournaments: tData,
           ...yData,
         })
@@ -212,6 +242,8 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
       return {
         id: user.id,
         username: user._doc.username,
+        first_name: user._doc.first_name,
+        last_name: user._doc.last_name,
         picks: picks,
         ...reducedPicks
       }

@@ -4,7 +4,6 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import withRoot from '../withRoot';
 import { yearlyLeaderboardExpandRow } from '../actions';
 import Layout from './Layout';
 import Table from '@material-ui/core/Table';
@@ -113,7 +112,7 @@ class App extends React.Component {
                   </TableCell>
                   <TableCell component="th" scope="row">
                     <Typography noWrap>
-                       {user.username}
+                       {user.username} {user.first_name ? `(${user.first_name} ${user.last_name})` : ''}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">{user.yearlyTotalMadeCuts}</TableCell>

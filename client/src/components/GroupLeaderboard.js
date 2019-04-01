@@ -35,16 +35,16 @@ class GroupLeaderboard extends Component {
     return '$'+money.toLocaleString();
   }
 
-  formatWinners(name, pos) {
+  showWinners(pos) {
     switch(pos) {
       case 1:
-        return `🥇${name}`;
+        return `🥇`;
       case 2:
-        return `🥈${name}`;
+        return `🥈`;
       case 3:
-        return `🥉${name}`;
+        return `🥉`;
       default:
-        return name;
+        return '';
     }
   }
 
@@ -85,7 +85,8 @@ class GroupLeaderboard extends Component {
                       </TableCell>
                       <TableCell component="th" scope="row">
                         <Typography noWrap>
-                           {leaderboard.tournamentStatus === 'closed' ? this.formatWinners(user.username, idx+1) : user.username}
+                           {leaderboard.tournamentStatus === 'closed' && this.showWinners(idx+1)}
+                           {user.username} {user.first_name ? `(${user.first_name} ${user.last_name})` : ''}
                         </Typography>
                       </TableCell>
                       {leaderboard.tournamentStatus === 'closed' && (

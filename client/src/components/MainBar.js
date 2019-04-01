@@ -92,6 +92,10 @@ class MainBar extends React.Component {
             <ListItemIcon><HomeIcon /></ListItemIcon>
             <ListItemText primary='Home' />
           </ListItem>
+          <ListItem button onClick={this.goTo.bind(this, 'profile')}>
+            <ListItemIcon><PersonIcon /></ListItemIcon>
+            <ListItemText primary='Profile' />
+          </ListItem>
           <ListItem button onClick={this.handleLogout}>
             <ListItemIcon><PersonIcon /></ListItemIcon>
             <ListItemText primary='Logout' />

@@ -99,7 +99,7 @@ class TournamentLeaderboard extends Component {
                                   {player.picks.map(user => (
                                     <TableRow key={user.id}>
                                       <TableCell style={{paddingRight: 10, width: 5}}>{user.position}</TableCell>
-                                      <TableCell>{user.username}</TableCell>
+                                      <TableCell>{user.username} {user.first_name ? `(${user.first_name} ${user.last_name})` : ''}</TableCell>
                                       {leaderboard.tournamentStatus === 'closed' && (
                                         <TableCell>{this.formatMoney(user.totalMoney) || 0}</TableCell>
                                       )}

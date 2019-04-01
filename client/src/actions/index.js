@@ -27,6 +27,67 @@ export const yearlyLeaderboardExpandRow = (id) => ({
   id
 })
 
+
+export function profileHasErrored(bool) {
+    return {
+        type: 'PROFILE_HAS_ERRORED',
+        hasErrored: bool
+    };
+}
+export function profileIsLoading(bool) {
+    return {
+        type: 'PROFILE_IS_LOADING',
+        isLoading: bool
+    };
+}
+
+export function profileFetchDataSuccess(profile) {
+    return {
+        type: 'PROFILE_FETCH_DATA_SUCCESS',
+        profile
+    };
+}
+
+export function changeProfile(field, value) {
+    return {
+        type: 'PROFILE_CHANGE',
+        field,
+        value
+    };
+}
+
+export function fetchProfile(url) {
+    return async (dispatch) => {
+        dispatch(profileIsLoading(true));
+        let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
+        try {
+          const response = await axios.get(url, headers);
+          dispatch(profileFetchDataSuccess(response.data));
+        } catch (error) {
+          dispatch(profileHasErrored(true));
+        }
+        dispatch(profileIsLoading(false));
+    };
+}
+
+export function saveProfile(data) {
+    return async (dispatch) => {
+        dispatch(profileIsLoading(true));
+        try {
+          const response = await axios({
+            method: 'PUT',
+            url: `${process.env.REACT_APP_API_URL}/api/profile`,
+            headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` },
+            data: data
+          })
+          dispatch(profileFetchDataSuccess(response.data));
+        } catch (error) {
+          dispatch(profileHasErrored(true));
+        }
+        dispatch(profileIsLoading(false));
+    };
+}
+
 export function groupsHasErrored(bool) {
     return {
         type: 'GROUPS_HAS_ERRORED',
