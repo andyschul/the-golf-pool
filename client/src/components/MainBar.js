@@ -17,6 +17,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
+import ExitToApp from '@material-ui/icons/ExitToApp';
 import { groupsFetchData } from '../actions';
 import auth0Client from '../Auth/Auth';
 import history from '../history';
@@ -40,7 +41,7 @@ class MainBar extends React.Component {
   };
 
   goTo = (route) => {
-    history.replace(`/${route}`);
+    history.push(`/${route}`);
   }
 
   toggleDrawer = (side, open) => () => {
@@ -97,7 +98,7 @@ class MainBar extends React.Component {
             <ListItemText primary='Profile' />
           </ListItem>
           <ListItem button onClick={this.handleLogout}>
-            <ListItemIcon><PersonIcon /></ListItemIcon>
+            <ListItemIcon><ExitToApp /></ListItemIcon>
             <ListItemText primary='Logout' />
           </ListItem>
         </List>

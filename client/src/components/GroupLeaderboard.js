@@ -16,7 +16,6 @@ import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 9,
     overflowX: 'auto',
   },
   table: {

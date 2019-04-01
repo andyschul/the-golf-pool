@@ -52,6 +52,9 @@ const styles = theme => ({
       marginTop: theme.spacing.unit * 10,
     },
   },
+  header: {
+    margin: theme.spacing.unit,
+  },
 });
 
 class App extends React.Component {
@@ -94,6 +97,9 @@ class App extends React.Component {
       </Layout>
 
       <Paper className={classes.root}>
+        <Typography variant="h5" component="h3" align="center" className={classes.header}>
+          Yearly Leaderboard
+        </Typography>
         <Table className={classes.table}>
           <TableHead>
             <TableRow>

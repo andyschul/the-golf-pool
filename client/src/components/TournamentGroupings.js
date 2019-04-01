@@ -8,6 +8,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import { connect } from 'react-redux';
 import PlayerList from './PlayerList'
 import auth0Client from '../Auth/Auth';
@@ -16,6 +17,12 @@ const styles = theme => ({
   root: {
     marginTop: theme.spacing.unit * 9,
     marginBottom: theme.spacing.unit * 9,
+  },
+  popper: {
+    width: 300
+  },
+  actionBtn: {
+    width: 100
   },
 });
 
@@ -120,13 +127,21 @@ class TournamentGroupings extends Component {
                 'aria-describedby': 'message-id',
               }}
               message={
-                <div>
-                <Button variant="contained" color="secondary" onClick={this.cancelPicks.bind(this)}>
-                  Cancel
-                </Button>
-                <Button variant="contained" color="primary" onClick={this.savePicks.bind(this)}>
-                  Save
-                </Button>
+                <div className={classes.popper}>
+                  <Grid container justify="center">
+                    <Grid item xs={6}>
+                      <Button variant="contained" color="secondary" className={classes.actionBtn} onClick={this.cancelPicks.bind(this)}>
+                        Cancel
+                      </Button>
+                    </Grid>
+                    <Grid item container xs={6} alignItems="flex-end" direction="column" spacing={0}>
+                      <Grid item>
+                        <Button variant="contained" color="primary" className={classes.actionBtn} onClick={this.savePicks.bind(this)}>
+                          Save
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </div>
               }
             />

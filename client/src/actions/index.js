@@ -81,8 +81,10 @@ export function saveProfile(data) {
             data: data
           })
           dispatch(profileFetchDataSuccess(response.data));
+          return true;
         } catch (error) {
           dispatch(profileHasErrored(true));
+          return false;
         }
         dispatch(profileIsLoading(false));
     };

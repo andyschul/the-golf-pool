@@ -71,8 +71,8 @@ class Leaderboard extends Component {
               textColor="primary"
               centered
             >
-              <Tab label="Group" />
-              <Tab label="Tournament" />
+              <Tab label="Group Leaderboard" />
+              <Tab label="Tournament Leaderboard" />
             </Tabs>
             {value === 0 && <TabContainer><GroupLeaderboard /></TabContainer>}
             {value === 1 && <TabContainer><TournamentLeaderboard /></TabContainer>}

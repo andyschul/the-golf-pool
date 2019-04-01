@@ -3,17 +3,40 @@ import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { fetchProfile } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 9,
-    overflowX: 'auto',
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
   },
-  table: {
-    minWidth: 300,
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+  margin: {
+    paddingTop: theme.spacing.unit * 2,
   },
 });
+
+const renderTextField = ({
+  label,
+  input,
+  meta: { touched, invalid, error },
+  ...custom
+}) => (
+  <TextField
+    label={label}
+    placeholder={label}
+    error={touched && invalid}
+    helperText={touched && error}
+    {...input}
+    {...custom}
+  />
+)
 
 class ProfileForm extends Component {
   componentDidMount() {
@@ -22,16 +45,12 @@ class ProfileForm extends Component {
   render() {
     const { classes, handleSubmit } = this.props
     return (
-      <form onSubmit={handleSubmit} className={classes.root}>
-        <div>
-          <label htmlFor="firstName">First Name</label>
-          <Field name="firstName" component="input" type="text" />
-        </div>
-        <div>
-          <label htmlFor="lastName">Last Name</label>
-          <Field name="lastName" component="input" type="text" />
-        </div>
-        <button type="submit">Submit</button>
+      <form onSubmit={handleSubmit} className={classes.container}>
+        <Field name="firstName" label="First Name" className={classes.textField} component={renderTextField} type="text" />
+        <Field name="lastName" label="Last Name" className={classes.textField} component={renderTextField} type="text" />
+        <FormControl fullWidth className={classes.margin}>
+          <Button variant="contained" color="primary" type="submit">Save</Button>
+        </FormControl>
       </form>
     )
   }
