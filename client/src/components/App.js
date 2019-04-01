@@ -78,7 +78,11 @@ class App extends React.Component {
           {schedule.currentTournament.name}
         </Typography>
         <Typography color="inherit" align="center" variant="h5" className={classes.h5}>
-          {schedule.currentTournament.start_date}
+          {schedule.currentTournament.start_date && (
+            `${new Date(`${schedule.currentTournament.start_date}T00:00:00`).toLocaleString('en-us', { timeZone: 'America/New_York', month: 'long', day: 'numeric' })}
+            -
+            ${new Date(`${schedule.currentTournament.end_date}T00:00:00`).toLocaleString('en-us', { timeZone: 'America/New_York', day: 'numeric' })}`
+          )}
         </Typography>
         <Button variant="contained"
                 color="default"

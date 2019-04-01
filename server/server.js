@@ -39,7 +39,7 @@ app.get('/api/schedule/:year', async (req, res, next) => {
     schedule = JSON.parse(schedule)
     let currentTournament = schedule.tournaments.filter(t => {
       let d = new Date(t.end_date);
-      d.setDate(d.getDate() + 27);
+      d.setDate(d.getDate() + 7);
       return d > new Date();
     }).shift()
     res.json({currentTournament: currentTournament || {}, tournaments: schedule['tournaments']});
