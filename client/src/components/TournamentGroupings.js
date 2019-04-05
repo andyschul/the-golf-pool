@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { groupsFetchData } from '../actions';
-import { groupsCanSave } from '../actions';
+import { groupsFetchData, groupsCanSave, savePicks, cancelPicks } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
@@ -51,37 +50,35 @@ class TournamentGroupings extends Component {
     this.props.canSave(false);
   }
 
-  savePicks(groups) {
-    let picks = [];
+
+  handlePicks = async groups => {
+    let data = {picks: []};
     for (let group of this.props.groups) {
-      for (let player of group) {
-        if (player.selected) {
-          picks.push(player);
+      let players = group.filter(p=>p.selected || p.saved);
+      if (players.length) {
+        let selected = players.filter(p=>p.selected).pop();
+        if (selected) {
+          data.picks.push(selected);
+        } else {
+          data.picks.push(players.filter(p=>p.saved).pop());
         }
       }
     }
-    let self = this;
 
-    axios({
-      method: 'PUT',
-      url: `${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/picks`,
-      headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` },
-      data: {
-        picks: picks
-      }
-    })
-    .then(function (response) {
-      self.props.canSave(false);
-      self.setState({ open: true, text: 'Saved!' });
-    })
-    .catch(function (error) {
-      console.log(error);
-      self.setState({ open: true, text: 'Your picks could not be saved' });
-    });
+    let url = `${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/picks`;
+    let success = await this.props.savePicks(url, data);
+    if (success) {
+      this.props.canSave(false);
+      this.setState({ open: true, text: 'Saved!' });
+    } else {
+      this.setState({ open: true, text: 'Your picks could not be saved' });
+    }
   }
 
+
+
   cancelPicks() {
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/groups?full=true`);
+    this.props.cancelPicks();
     this.props.canSave(false);
   }
 
@@ -136,7 +133,7 @@ class TournamentGroupings extends Component {
                     </Grid>
                     <Grid item container xs={6} alignItems="flex-end" direction="column" spacing={0}>
                       <Grid item>
-                        <Button variant="contained" color="primary" className={classes.actionBtn} onClick={this.savePicks.bind(this)}>
+                        <Button variant="contained" color="primary" className={classes.actionBtn} onClick={this.handlePicks.bind(this)}>
                           Save
                         </Button>
                       </Grid>
@@ -175,7 +172,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchData: (url) => dispatch(groupsFetchData(url)),
-    canSave: (bool) => dispatch(groupsCanSave(bool))
+    canSave: (bool) => dispatch(groupsCanSave(bool)),
+    savePicks: (url, data) => dispatch(savePicks(url, data)),
+    cancelPicks: () => dispatch(cancelPicks())
   };
 };
 

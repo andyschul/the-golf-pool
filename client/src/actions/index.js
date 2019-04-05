@@ -131,6 +131,30 @@ export function groupsFetchData(url) {
     };
 }
 
+export function savePicks(url, data) {
+    return async (dispatch) => {
+        // dispatch(groupsSaveIsLoading(true));
+        try {
+          const response = await axios({
+            method: 'PUT',
+            url: url,
+            headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` },
+            data: data
+          })
+          dispatch(groupsFetchDataSuccess(response.data))
+          return true;
+        } catch (error) {
+          // dispatch(groupsSaveHasErrored(true));
+          return false;
+        }
+        // dispatch(groupsSaveIsLoading(false));
+    };
+}
+
+export const cancelPicks = () => ({
+  type: 'CANCEL_PICKS'
+})
+
 export function leaderboardHasErrored(bool) {
     return {
         type: 'LEADERBOARD_HAS_ERRORED',

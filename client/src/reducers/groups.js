@@ -22,6 +22,8 @@ export function groups(state = [], action) {
             return action.groups;
         case 'SELECT_PLAYER':
           return state.map((group, idx) => idx !== action.groupIndex ? group : (group.map(player => player.id === action.id ? { ...player, selected: true } : { ...player, selected: false })));
+        case 'CANCEL_PICKS':
+          return state.map(group => group.map(player => ({ ...player, selected: false })));
         default:
             return state;
     }
