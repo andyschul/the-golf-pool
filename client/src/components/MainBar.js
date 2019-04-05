@@ -15,10 +15,12 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToApp from '@material-ui/icons/ExitToApp';
-import { groupsFetchData } from '../actions';
+import { groupsFetchData, setGroupVisibilityFilter } from '../actions';
 import auth0Client from '../Auth/Auth';
 import history from '../history';
 
@@ -50,12 +52,17 @@ class MainBar extends React.Component {
     });
   };
 
+  toggleGroup = name => event => {
+    let filter = event.target.checked ? 'SHOW_SAVED' : 'SHOW_ALL';
+    this.props.setGroupVisibilityFilter(filter);
+  };
+
   handleLogout = () => {
     auth0Client.signOut();
   };
 
   render() {
-    const { classes, schedule } = this.props;
+    const { classes, schedule, groupVisibilityFilter, match } = this.props;
 
     const sideList = (
       <div className={classes.list}>
@@ -120,6 +127,20 @@ class MainBar extends React.Component {
                 {sideList}
               </div>
             </Drawer>
+            <div className={classes.grow} />
+            {match.path === '/tournaments/:id/groups' &&
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={groupVisibilityFilter == 'SHOW_SAVED' ? true : false}
+                    onChange={this.toggleGroup('checkedB')}
+                    value="checkedB"
+                    color="primary"
+                  />
+                }
+                label="My Picks"
+              />
+            }
           </Toolbar>
         </AppBar>
       </div>
@@ -134,6 +155,7 @@ MainBar.propTypes = {
 const mapStateToProps = (state) => {
   return {
     schedule: state.schedule,
+    groupVisibilityFilter: state.groupVisibilityFilter,
     hasErrored: state.scheduleHasErrored,
     isLoading: state.scheduleIsLoading
   };
@@ -141,7 +163,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchData: (url) => dispatch(groupsFetchData(url))
+    fetchData: (url) => dispatch(groupsFetchData(url)),
+    setGroupVisibilityFilter: (filter) => dispatch(setGroupVisibilityFilter(filter)),
   };
 };
 

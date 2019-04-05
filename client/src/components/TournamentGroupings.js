@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { groupsFetchData, groupsCanSave, savePicks, cancelPicks } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import { connect } from 'react-redux';
 import PlayerList from './PlayerList'
 import auth0Client from '../Auth/Auth';
 
@@ -160,22 +158,4 @@ TournamentGroupings.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  return {
-    groups: state.groups,
-    hasErrored: state.groupsHasErrored,
-    isLoading: state.groupsIsLoading,
-    groupsCanSave: state.groupsCanSave
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    fetchData: (url) => dispatch(groupsFetchData(url)),
-    canSave: (bool) => dispatch(groupsCanSave(bool)),
-    savePicks: (url, data) => dispatch(savePicks(url, data)),
-    cancelPicks: () => dispatch(cancelPicks())
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TournamentGroupings));
+export default withStyles(styles)(TournamentGroupings);

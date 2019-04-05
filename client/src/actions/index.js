@@ -81,15 +81,22 @@ export function saveProfile(data) {
             data: data
           })
           dispatch(profileFetchDataSuccess(response.data));
+          dispatch(profileIsLoading(false));
           return true;
         } catch (error) {
           dispatch(profileHasErrored(true));
+          dispatch(profileIsLoading(false));
           return false;
         }
-        dispatch(profileIsLoading(false));
     };
 }
 
+export function setGroupVisibilityFilter(filter) {
+    return {
+        type: 'SET_GROUP_VISIBILITY_FILTER',
+        filter
+    };
+}
 export function groupsHasErrored(bool) {
     return {
         type: 'GROUPS_HAS_ERRORED',

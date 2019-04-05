@@ -29,6 +29,15 @@ export function groups(state = [], action) {
     }
 }
 
+export function groupVisibilityFilter(state = 'SHOW_ALL', action) {
+  switch (action.type) {
+    case 'SET_GROUP_VISIBILITY_FILTER':
+      return action.filter
+    default:
+      return state
+  }
+}
+
 export function groupsCanSave(state = false, action) {
     switch (action.type) {
         case 'GROUPS_CAN_SAVE':

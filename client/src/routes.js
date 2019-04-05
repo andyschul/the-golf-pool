@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import App from './components/App';
 import Profile from './components/Profile';
 import Leaderboard from './components/Leaderboard';
-import TournamentGroupings from './components/TournamentGroupings';
+import VisibleGroupList from './containers/VisibleGroupList';
 import MainBar from './components/MainBar';
 import Callback from './components/Callback';
 import auth0Client from './Auth/Auth';
@@ -18,7 +18,12 @@ function SecuredRoute(props) {
           auth0Client.signIn();
           return <div></div>;
         }
-        return <Component {...props} />
+        return (
+          <React.Fragment>
+            <Route {...props} component={MainBar} />
+            <Component {...props} />
+          </React.Fragment>
+        )
     }} />
   );
 }
@@ -49,10 +54,10 @@ class Routes extends Component {
     return (
       <div>
         <Route exact path='/callback' component={Callback}/>
-        <Route path='/' component={MainBar} />
+        <Route exact path='/' component={MainBar} />
         <Route exact path='/' component={App} />
         <SecuredRoute path="/profile" component={Profile} checkingSession={this.state.checkingSession} />
-        <SecuredRoute path="/tournaments/:id/groups" component={TournamentGroupings} checkingSession={this.state.checkingSession} />
+        <SecuredRoute path="/tournaments/:id/groups" component={VisibleGroupList} checkingSession={this.state.checkingSession} />
         <SecuredRoute path="/tournaments/:id/leaderboard" component={Leaderboard} checkingSession={this.state.checkingSession} />
       </div>
     );

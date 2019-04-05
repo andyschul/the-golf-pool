@@ -89,7 +89,7 @@ class PlayerList extends Component {
 
   tick() {
     this.setState({
-      locked: new Date(this.props.players[0].tee_time) < new Date()
+      locked: this.props.players.length ? new Date(this.props.players[0].tee_time) < new Date() : false
     });
   }
 
@@ -108,9 +108,19 @@ class PlayerList extends Component {
                 </React.Fragment>
               } />
             </ListItem>
-            {players.map(player => (
-              <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
-            ))}
+            {players.length ? players.map(player => (
+              <Player key={player.id} {...player} locked={false && this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
+            )) :
+            <ListItem>
+              <ListItemText primary={
+                <React.Fragment>
+                  <Typography>
+                    No selection made
+                  </Typography>
+                </React.Fragment>
+              } />
+            </ListItem>
+            }
           </List>
         </Paper>
       </div>
