@@ -109,7 +109,7 @@ class PlayerList extends Component {
               } />
             </ListItem>
             {players.length ? players.map(player => (
-              <Player key={player.id} {...player} locked={false && this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
+              <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
             )) :
             <ListItem>
               <ListItemText primary={

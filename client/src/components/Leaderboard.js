@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { leaderboardExpandRow, tournamentLeaderboardExpandRow } from '../actions';
 import { connect } from 'react-redux';
-import { leaderboardFetchData, leaderboardView } from '../actions';
+import { leaderboardFetchData } from '../actions';
 import TournamentLeaderboard from './TournamentLeaderboard';
 import GroupLeaderboard from './GroupLeaderboard';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
@@ -49,7 +47,7 @@ class Leaderboard extends Component {
   };
 
   render() {
-    const { classes, leaderboard, isLoading, leaderboardView } = this.props;
+    const { classes, leaderboard, isLoading } = this.props;
     const { value } = this.state;
     if (isLoading) {
       return (
@@ -103,8 +101,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url)),
-        leaderboardView: (id) => dispatch(leaderboardView(id))
+        fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url))
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Leaderboard));

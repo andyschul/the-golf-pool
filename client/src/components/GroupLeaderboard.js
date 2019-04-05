@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { leaderboardExpandRow, tournamentLeaderboardExpandRow } from '../actions';
 import { connect } from 'react-redux';
-import { leaderboardFetchData } from '../actions';
-import TournamentLeaderboard from './TournamentLeaderboard';
+import { leaderboardFetchData, leaderboardExpandRow } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';

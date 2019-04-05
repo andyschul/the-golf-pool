@@ -132,7 +132,7 @@ class MainBar extends React.Component {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={groupVisibilityFilter == 'SHOW_SAVED' ? true : false}
+                    checked={groupVisibilityFilter === 'SHOW_SAVED' ? true : false}
                     onChange={this.toggleGroup('checkedB')}
                     value="checkedB"
                     color="primary"

@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
-import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import PlayerList from './PlayerList'
-import auth0Client from '../Auth/Auth';
 
 const styles = theme => ({
   root: {
@@ -22,10 +19,6 @@ const styles = theme => ({
     width: 100
   },
 });
-
-function TransitionUp(props) {
-  return <Slide {...props} direction="up" />;
-}
 
 class TournamentGroupings extends Component {
   constructor(props) {
@@ -85,7 +78,7 @@ class TournamentGroupings extends Component {
   };
 
   render() {
-    const { classes, groups, groupsCanSave, handleClose, isLoading } = this.props;
+    const { classes, groups, groupsCanSave, isLoading } = this.props;
 
     if (isLoading) {
       return (
