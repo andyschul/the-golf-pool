@@ -45,12 +45,15 @@ const styles = theme => ({
   h3: {
     marginTop: theme.spacing.unit * 10,
   },
-  h5: {
-    marginBottom: theme.spacing.unit * 4,
+  course: {
     marginTop: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 2,
     [theme.breakpoints.up('sm')]: {
-      marginTop: theme.spacing.unit * 10,
+      marginTop: theme.spacing.unit * 4,
     },
+  },
+  date: {
+    marginBottom: theme.spacing.unit * 4,
   },
   header: {
     margin: theme.spacing.unit,
@@ -58,7 +61,6 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
-
   formatMoney(money) {
     if (!money) return 'CUT';
     return '$'+money.toLocaleString();
@@ -70,36 +72,54 @@ class App extends React.Component {
 
   render() {
     const { classes, schedule, yearlyLeaderboard, expandRow } = this.props;
-
+    const formatMonth = {
+      "01": "January",
+      "02": "February",
+      "03": "March",
+      "04": "April",
+      "05": "May",
+      "06": "June",
+      "07": "July",
+      "08": "August",
+      "09": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
     return (
       <div>
+      {schedule.currentTournament.name && (
       <Layout backgroundClassName={classes.background}>
-        <Typography color="inherit" align="center" variant="h3" marked="center" className={classes.h3}>
-          {schedule.currentTournament.name}
-        </Typography>
-        <Typography color="inherit" align="center" variant="h5" className={classes.h5}>
-          {schedule.currentTournament.start_date && (
-            `${new Date(`${schedule.currentTournament.start_date}T00:00:00`).toLocaleString('en-us', { timeZone: 'America/New_York', month: 'long', day: 'numeric' })}
-            -
-            ${new Date(`${schedule.currentTournament.end_date}T00:00:00`).toLocaleString('en-us', { timeZone: 'America/New_York', day: 'numeric' })}`
-          )}
-        </Typography>
-        <Button variant="contained"
-                color="default"
-                className={classes.button}
-                onClick={this.goTo.bind(this, `tournaments/${schedule.currentTournament.id}/groups`)}
-        >
-          Make Picks
-        </Button>
-        <Button variant="contained"
-                color="primary"
-                className={classes.button2}
-                onClick={this.goTo.bind(this, `tournaments/${schedule.currentTournament.id}/leaderboard`)}
-        >
-          Leaderboard
-        </Button>
+        <React.Fragment>
+          <Typography color="inherit" align="center" variant="h3" marked="center" className={classes.h3}>
+            {schedule.currentTournament.name}
+          </Typography>
+          <Typography color="inherit" align="center" variant="h5" className={classes.course}>
+            {schedule.currentTournament.venue.name}
+          </Typography>
+          <Typography color="inherit" align="center" variant="h5" className={classes.date}>
+            {schedule.currentTournament.start_date && (
+              `(${formatMonth[schedule.currentTournament.start_date.split('-')[1]]}
+              ${schedule.currentTournament.start_date.split('-')[2]}–${schedule.currentTournament.end_date.split('-')[2]})`
+            )}
+          </Typography>
+          <Button variant="contained"
+                  color="default"
+                  className={classes.button}
+                  onClick={this.goTo.bind(this, `tournaments/${schedule.currentTournament.id}/groups`)}
+          >
+            Make Picks
+          </Button>
+          <Button variant="contained"
+                  color="primary"
+                  className={classes.button2}
+                  onClick={this.goTo.bind(this, `tournaments/${schedule.currentTournament.id}/leaderboard`)}
+          >
+            Leaderboard
+          </Button>
+        </React.Fragment>
       </Layout>
-
+      )}
       <Paper className={classes.root}>
         <Typography variant="h5" component="h3" align="center" className={classes.header}>
           Yearly Leaderboard
