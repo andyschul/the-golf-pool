@@ -20,7 +20,7 @@ function SecuredRoute(props) {
         }
         return (
           <React.Fragment>
-            <Route {...props} component={MainBar} />
+            <MainBar {...props} />
             <Component {...props} />
           </React.Fragment>
         )

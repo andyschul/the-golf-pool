@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { tournamentLeaderboardExpandRow } from '../actions';
-import { connect } from 'react-redux';
-import { leaderboardFetchData } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -46,7 +43,7 @@ class TournamentLeaderboard extends Component {
     } else {
       return (
         <React.Fragment>
-        {leaderboard.leaderboard.length ?
+        {leaderboard.tournamentLeaderboard.length ?
               <Paper className={classes.root}>
                 <Table className={classes.table}>
                   <TableHead>
@@ -69,7 +66,7 @@ class TournamentLeaderboard extends Component {
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <Typography noWrap>
-                               {player.first_name} {player.last_name}
+                               {player.first_name} {player.last_name} {player.selected && '⭐'}
                             </Typography>
                           </TableCell>
                           {leaderboard.tournamentStatus === 'closed' && (
@@ -134,18 +131,4 @@ TournamentLeaderboard.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = (state) => {
-  return {
-    leaderboard: state.leaderboard,
-    hasErrored: state.leaderboardHasErrored,
-    isLoading: state.leaderboardIsLoading
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url)),
-        expandTournamentLeaderboardRow: (id) => dispatch(tournamentLeaderboardExpandRow(id)),
-    };
-};
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TournamentLeaderboard));
+export default withStyles(styles)(TournamentLeaderboard);

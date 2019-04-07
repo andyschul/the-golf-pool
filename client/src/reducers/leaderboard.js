@@ -16,6 +16,15 @@ export function leaderboardIsLoading(state = false, action) {
     }
 }
 
+export function leaderboardVisibilityFilter(state = 'SHOW_ALL', action) {
+  switch (action.type) {
+    case 'SET_LEADERBOARD_VISIBILITY_FILTER':
+      return action.filter
+    default:
+      return state
+  }
+}
+
 export function leaderboard(state = {view: 'group', tournamentStatus: '', leaderboard: [], tournamentLeaderboard: []}, action) {
     switch (action.type) {
         case 'LEADERBOARD_FETCH_DATA_SUCCESS':

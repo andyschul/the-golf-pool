@@ -217,6 +217,11 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
     leaderboard = JSON.parse(leaderboard);
 
     const users = await User.find({'tournaments.tournament_id': req.params.tournamentId});
+
+    const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
+    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
+    let userPlayerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
+
     let players = await getAsync(`tournaments:${req.params.tournamentId}:players`);
     players = JSON.parse(players);
     let leaderboardData = []
@@ -263,7 +268,7 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
       leaderboardData.sort((a,b) => (a.totalScore > b.totalScore) ? 1 : ((b.totalScore > a.totalScore) ? -1 : 0));
 
     let l = leaderboard.leaderboard.reduce((obj, item) => {
-      obj[item.id] = {...item, picks: []};
+      obj[item.id] = {...item, selected: userPlayerIds.includes(item.id), picks: []};
       return obj;
     }, {})
     let pos = 1;

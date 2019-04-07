@@ -15,12 +15,13 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToApp from '@material-ui/icons/ExitToApp';
-import { groupsFetchData, setGroupVisibilityFilter } from '../actions';
+import { groupsFetchData, setGroupVisibilityFilter, setLeaderboardVisibilityFilter } from '../actions';
 import auth0Client from '../Auth/Auth';
 import history from '../history';
 
@@ -57,12 +58,17 @@ class MainBar extends React.Component {
     this.props.setGroupVisibilityFilter(filter);
   };
 
+  toggleLeaderboard = name => event => {
+    let filter = event.target.checked ? 'SHOW_MY_PICKS' : 'SHOW_ALL';
+    this.props.setLeaderboardVisibilityFilter(filter);
+  };
+
   handleLogout = () => {
     auth0Client.signOut();
   };
 
   render() {
-    const { classes, schedule, groupVisibilityFilter, match } = this.props;
+    const { classes, schedule, groupVisibilityFilter, leaderboardVisibilityFilter, match } = this.props;
 
     const sideList = (
       <div className={classes.list}>
@@ -112,23 +118,20 @@ class MainBar extends React.Component {
       </div>
     );
 
-    return (
-      <div className={this.props.classes.root}>
-        <AppBar position="fixed" color="default">
-          <Toolbar>
-            <IconButton onClick={this.toggleDrawer('left', true)} className={this.props.classes.menuButton} color="inherit" aria-label="Menu">
-              <MenuIcon />
-            </IconButton>
-            <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)}>
-              <div
-                tabIndex={0}
-                role="button"
-              >
-                {sideList}
-              </div>
-            </Drawer>
-            <div className={classes.grow} />
-            {match.path === '/tournaments/:id/groups' &&
+    const barContent = (page) => {
+      switch (page) {
+        case '/profile':
+          return (
+            <Typography variant="h6" color="inherit" className={classes.grow}>
+              Profile
+            </Typography>
+          );
+        case '/tournaments/:id/groups':
+          return (
+            <React.Fragment>
+              <Typography variant="h6" color="inherit" className={classes.grow}>
+                Picks
+              </Typography>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -140,7 +143,48 @@ class MainBar extends React.Component {
                 }
                 label="My Picks"
               />
-            }
+            </React.Fragment>
+          );
+        case '/tournaments/:id/leaderboard':
+          return (
+            <React.Fragment>
+              <Typography variant="h6" color="inherit" className={classes.grow}>
+                Leaderboard
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={leaderboardVisibilityFilter === 'SHOW_MY_PICKS' ? true : false}
+                    onChange={this.toggleLeaderboard('checkedB')}
+                    value="checkedA"
+                    color="primary"
+                  />
+                }
+                label="My Picks"
+              />
+            </React.Fragment>
+          );
+        default:
+          return;
+      }
+    }
+
+    return (
+      <div className={classes.root}>
+        <AppBar position="fixed" color="default">
+          <Toolbar>
+            <IconButton onClick={this.toggleDrawer('left', true)} className={classes.menuButton} color="inherit" aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+            <Drawer open={this.state.left} onClose={this.toggleDrawer('left', false)}>
+              <div
+                tabIndex={0}
+                role="button"
+              >
+                {sideList}
+              </div>
+            </Drawer>
+            {barContent(match.path)}
           </Toolbar>
         </AppBar>
       </div>
@@ -156,6 +200,7 @@ const mapStateToProps = (state) => {
   return {
     schedule: state.schedule,
     groupVisibilityFilter: state.groupVisibilityFilter,
+    leaderboardVisibilityFilter: state.leaderboardVisibilityFilter,
     hasErrored: state.scheduleHasErrored,
     isLoading: state.scheduleIsLoading
   };
@@ -165,6 +210,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchData: (url) => dispatch(groupsFetchData(url)),
     setGroupVisibilityFilter: (filter) => dispatch(setGroupVisibilityFilter(filter)),
+    setLeaderboardVisibilityFilter: (filter) => dispatch(setLeaderboardVisibilityFilter(filter)),
   };
 };
 

@@ -4,7 +4,6 @@ import { saveProfile } from '../actions';
 import ProfileForm from './ProfileForm'
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
 import Snackbar from '@material-ui/core/Snackbar'
 
 const styles = theme => ({
@@ -53,9 +52,6 @@ class Profile extends Component {
           message={<span id="message-id">{this.state.text}</span>}
         />
         <Paper className={classes.root} elevation={1}>
-          <Typography variant="h5" component="h3" className={classes.header}>
-            Profile
-          </Typography>
           <ProfileForm onSubmit={this.submit} />
         </Paper>
       </React.Fragment>

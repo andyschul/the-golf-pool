@@ -97,6 +97,14 @@ export function setGroupVisibilityFilter(filter) {
         filter
     };
 }
+
+export function setLeaderboardVisibilityFilter(filter) {
+    return {
+        type: 'SET_LEADERBOARD_VISIBILITY_FILTER',
+        filter
+    };
+}
+
 export function groupsHasErrored(bool) {
     return {
         type: 'GROUPS_HAS_ERRORED',

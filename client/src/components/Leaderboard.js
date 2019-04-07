@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { leaderboardFetchData } from '../actions';
-import TournamentLeaderboard from './TournamentLeaderboard';
+import VisibleLeaderboard from '../containers/VisibleLeaderboard';
 import GroupLeaderboard from './GroupLeaderboard';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -69,11 +69,11 @@ class Leaderboard extends Component {
               textColor="primary"
               centered
             >
-              <Tab label="Group Leaderboard" />
-              <Tab label="Tournament Leaderboard" />
+              <Tab label="Group" />
+              <Tab label="Tournament" />
             </Tabs>
             {value === 0 && <TabContainer><GroupLeaderboard /></TabContainer>}
-            {value === 1 && <TabContainer><TournamentLeaderboard /></TabContainer>}
+            {value === 1 && <TabContainer><VisibleLeaderboard /></TabContainer>}
           </div>
           :
           <Typography variant="h6" gutterBottom className={classes.root}>
