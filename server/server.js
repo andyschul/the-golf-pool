@@ -96,10 +96,10 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
       let leaderboard = [];
 
       for (let user of users) {
-        userTournaments = user.tournaments.filter(t => tournamentIds.includes(t.tournament_id))
+        let userTournaments = user.tournaments.filter(t => tournamentIds.includes(t._doc.tournament_id))
         let tData = [];
         for (let tour of userTournaments) {
-          let picks = tour.picks.map(player => (
+          let picks = tournamentPlayerData[tour.tournament_id]? tour.picks.map(player => (
             {
               id: tournamentPlayerData[tour.tournament_id][player.id].id,
               first_name: tournamentPlayerData[tour.tournament_id][player.id].first_name,
@@ -110,7 +110,7 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
               money: tournamentPlayerData[tour.tournament_id][player.id].money || null,
               strokes: tournamentPlayerData[tour.tournament_id][player.id].strokes,
             }
-          ));
+          )) : [];
 
           reducedPicks = picks.reduce((accumulator, item) => {
             accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money || 0;
@@ -155,10 +155,6 @@ app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next
   try {
     const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
     let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
-    if (!usertournamentData) {
-      res.json([]);
-      return next();
-    }
     if (req.query['full']) {
       let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
       groups = JSON.parse(groups);
@@ -180,9 +176,9 @@ app.put('/api/tournaments/:tournamentId/picks', checkJwt, async (req, res, next)
     let cachedTournament = await getAsync(`tournaments:${req.params.tournamentId}`);
     cachedTournament = JSON.parse(cachedTournament);
 
-    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
-    if (usertournamentData) {
-      usertournamentData.picks = req.body.picks
+    let tournament = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
+    if (tournament) {
+      tournament.picks = req.body.picks
     } else {
       user.tournaments.push({
         tournament_id: req.params.tournamentId,
@@ -196,6 +192,7 @@ app.put('/api/tournaments/:tournamentId/picks', checkJwt, async (req, res, next)
 
     let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
     groups = JSON.parse(groups);
+    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
     let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
     let retJson = groups.length ? groups.map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, saved: true } : { ...player, selected: false })) : [];
     res.json(retJson);
