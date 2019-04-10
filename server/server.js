@@ -157,14 +157,14 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
 app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
-    let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
-    if (!usertournamentData) {
-      res.json([]);
-      return next();
-    }
     if (req.query['full']) {
       let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
+      if (!groups) {
+        res.json([]);
+        return next();
+      }
       groups = JSON.parse(groups);
+      let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
       let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
       let retJson = groups.length ? groups.map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, saved: true } : { ...player, selected: false })) : [];
       res.json(retJson);
