@@ -99,7 +99,10 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
         let userTournaments = user.tournaments.filter(t => tournamentIds.includes(t._doc.tournament_id))
         let tData = [];
         for (let tour of userTournaments) {
-          let picks = tournamentPlayerData[tour.tournament_id]? tour.picks.map(player => (
+          if (!tournamentPlayerData[tour.tournament_id]) {
+            continue;
+          }
+          let picks = tournamentPlayerData[tour.tournament_id] ? tour.picks.map(player => (
             {
               id: tournamentPlayerData[tour.tournament_id][player.id].id,
               first_name: tournamentPlayerData[tour.tournament_id][player.id].first_name,
@@ -107,13 +110,13 @@ app.get('/api/schedule/:year/leaderboard', async (req, res, next) => {
               position: tournamentPlayerData[tour.tournament_id][player.id].position,
               score: tournamentPlayerData[tour.tournament_id][player.id].score,
               status: tournamentPlayerData[tour.tournament_id][player.id].status || null,
-              money: tournamentPlayerData[tour.tournament_id][player.id].money || null,
+              money: tournamentPlayerData[tour.tournament_id][player.id].money || 0,
               strokes: tournamentPlayerData[tour.tournament_id][player.id].strokes,
             }
           )) : [];
 
           reducedPicks = picks.reduce((accumulator, item) => {
-            accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money || 0;
+            accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money;
             accumulator.totalMadeCuts = (accumulator.totalMadeCuts || 0) + (item.status === 'CUT' ? 0 : 1);
             accumulator.totalScore = (accumulator.totalScore || 0) + item.score;
             accumulator.totalPosition = (accumulator.totalPosition || 0) + item.position;
@@ -155,6 +158,10 @@ app.get('/api/tournaments/:tournamentId/groups', checkJwt, async (req, res, next
   try {
     const user = await User.findOne({ _id: req.user.sub.split('|')[1] });
     let usertournamentData = user.tournaments.filter(t => t.tournament_id === req.params.tournamentId).pop();
+    if (!usertournamentData) {
+      res.json([]);
+      return next();
+    }
     if (req.query['full']) {
       let groups = await getAsync(`tournaments:${req.params.tournamentId}:groups`);
       groups = JSON.parse(groups);

@@ -43,7 +43,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 5,
   },
   h3: {
-    marginTop: theme.spacing.unit * 10,
+    marginTop: theme.spacing.unit * 15,
   },
   course: {
     marginTop: theme.spacing.unit * 4,
