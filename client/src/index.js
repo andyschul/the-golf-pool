@@ -5,7 +5,7 @@ import { Router } from 'react-router-dom';
 import store from './store/configureStore';
 import Routes from './routes';
 import history from './history';
-require('dotenv').config({path: '../.env', silent: process.env.NODE_ENV === 'production'});
+require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 
 
 render(
