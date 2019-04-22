@@ -7,8 +7,6 @@ const {promisify} = require('util');
 const jwt = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
 require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
-// require('./scheduler');
-// const { DateTime } = require('luxon');
 const app = express();
 const port = process.env.PORT || 5000;
 const User = require('./models/user');
@@ -19,16 +17,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let startTime = new Date(Date.now());
-console.log(startTime)
-let endTime = new Date(startTime.getTime() + 100000);
-
-var rule = new schedule.RecurrenceRule();
-rule.second = [new schedule.Range(9, 21)];
-
-var j = schedule.scheduleJob({ start: startTime, end: endTime, rule: rule }, function(){
-  console.log(new Date());
-});
 
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({

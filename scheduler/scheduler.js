@@ -38,7 +38,6 @@ async function createSchedulers(year) {
     let leaderboardRule = new schedule.RecurrenceRule();
     leaderboardRule.minute = [0, 20, 40];
     leaderboardRule.hour = [new schedule.Range(9, 21)];
-    let a = await api.getLeaderboard(tournament.id);
     let leaderboardSchedule = schedule.scheduleJob({ start: tournamentStartDate, end: leaderboardEndDate, rule: leaderboardRule, tz: tz }, async function(){
       let leaderboard = await api.getLeaderboard(tournament.id);
       if (leaderboard && leaderboard.status === 'closed') {
