@@ -16,7 +16,8 @@ const schedule = require('node-schedule');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
@@ -287,12 +288,16 @@ app.get('/api/tournaments/:tournamentId/leaderboard', checkJwt, async (req, res,
       leaderboard: leaderboardData,
       tournamentLeaderboard: tournamentLeaderboard
     }
+    io.emit('leaderboard', retJson);
     res.json(retJson);
   } catch (e) {
     next(e)
   }
 });
 
+io.on('connection', function(socket){
+  console.log('connected');
+});
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
@@ -302,4 +307,4 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 }
-app.listen(port, () => console.log(`Listening on port ${port}`));
+http.listen(port, () => console.log(`Listening on port ${port}`));
