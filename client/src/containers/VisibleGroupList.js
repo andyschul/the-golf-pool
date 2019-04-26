@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { groupsFetchData, groupsCanSave, savePicks, cancelPicks } from '../actions';
+import { groupsCanSave, cancelPicks } from '../actions';
 import TournamentGroupings from '../components/TournamentGroupings'
 
 const getVisibleGroups = (groups, filter) => {
@@ -23,9 +23,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchData: (url) => dispatch(groupsFetchData(url)),
     canSave: (bool) => dispatch(groupsCanSave(bool)),
-    savePicks: (url, data) => dispatch(savePicks(url, data)),
     cancelPicks: () => dispatch(cancelPicks())
   };
 }

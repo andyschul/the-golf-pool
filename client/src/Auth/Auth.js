@@ -55,7 +55,7 @@ class Auth {
     this.profile = authResult.idTokenPayload;
     this.expiresAt = authResult.idTokenPayload.exp * 1000;
     this.socket = io.connect(`${process.env.REACT_APP_API_URL}/private`, {
-      query: {token: authResult.idToken}
+      query: {token: 'authResult.idToken'}
     });
     this.socket.on('disconnect', () => {
       console.log('disconnecting')

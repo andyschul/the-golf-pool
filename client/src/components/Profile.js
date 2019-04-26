@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { saveProfile } from '../actions';
 import ProfileForm from './ProfileForm'
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper'
@@ -62,10 +60,4 @@ class Profile extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    saveProfile: (data) => dispatch(saveProfile(data))
-  };
-};
-
-export default connect(null, mapDispatchToProps)(withStyles(styles)(Profile));
+export default withStyles(styles)(Profile);

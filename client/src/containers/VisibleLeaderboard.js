@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { leaderboardFetchData, tournamentLeaderboardExpandRow } from '../actions';
+import { tournamentLeaderboardExpandRow } from '../actions';
 import TournamentLeaderboard from '../components/TournamentLeaderboard'
 
 const getVisibleLeaderboard = (leaderboard, filter) => {
@@ -22,7 +22,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url)),
         expandTournamentLeaderboardRow: (id) => dispatch(tournamentLeaderboardExpandRow(id)),
     };
 };

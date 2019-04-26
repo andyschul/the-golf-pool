@@ -21,7 +21,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToApp from '@material-ui/icons/ExitToApp';
-import { groupsFetchData, setGroupVisibilityFilter, setLeaderboardVisibilityFilter } from '../actions';
+import { setGroupVisibilityFilter, setLeaderboardVisibilityFilter } from '../actions';
 import auth0Client from '../Auth/Auth';
 import history from '../history';
 
@@ -201,14 +201,11 @@ const mapStateToProps = (state) => {
     schedule: state.schedule,
     groupVisibilityFilter: state.groupVisibilityFilter,
     leaderboardVisibilityFilter: state.leaderboardVisibilityFilter,
-    hasErrored: state.scheduleHasErrored,
-    isLoading: state.scheduleIsLoading
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchData: (url) => dispatch(groupsFetchData(url)),
     setGroupVisibilityFilter: (filter) => dispatch(setGroupVisibilityFilter(filter)),
     setLeaderboardVisibilityFilter: (filter) => dispatch(setLeaderboardVisibilityFilter(filter)),
   };

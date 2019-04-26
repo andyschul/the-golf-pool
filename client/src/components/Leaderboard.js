@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { leaderboardFetchData } from '../actions';
 import VisibleLeaderboard from '../containers/VisibleLeaderboard';
 import GroupLeaderboard from './GroupLeaderboard';
 import { withStyles } from '@material-ui/core/styles';
@@ -95,9 +94,7 @@ Leaderboard.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    leaderboard: state.leaderboard,
-    hasErrored: state.leaderboardHasErrored,
-    isLoading: state.leaderboardIsLoading
+    leaderboard: state.leaderboard
   };
 };
 

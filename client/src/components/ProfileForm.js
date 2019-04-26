@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
-import { fetchProfile } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -69,10 +68,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    fetchProfile: (url) => dispatch(fetchProfile(url))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ProfileForm));
+export default connect(mapStateToProps, null)(withStyles(styles)(ProfileForm));

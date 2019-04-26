@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { leaderboardFetchData, leaderboardExpandRow } from '../actions';
+import { leaderboardExpandRow } from '../actions';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -147,15 +147,12 @@ GroupLeaderboard.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    leaderboard: state.leaderboard,
-    hasErrored: state.leaderboardHasErrored,
-    isLoading: state.leaderboardIsLoading
+    leaderboard: state.leaderboard
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url)),
         expandLeaderboardRow: (id) => dispatch(leaderboardExpandRow(id)),
     };
 };

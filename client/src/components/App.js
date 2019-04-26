@@ -17,7 +17,6 @@ import history from '../history';
 
 const backgroundImage = 'https://wallpaperbro.com/img/4442.jpg';
 
-
 const styles = theme => ({
   root: {
     width: '100%',
