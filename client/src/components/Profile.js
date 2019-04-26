@@ -5,6 +5,7 @@ import ProfileForm from './ProfileForm'
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper'
 import Snackbar from '@material-ui/core/Snackbar'
+import auth0Client from '../Auth/Auth';
 
 const styles = theme => ({
   root: {
@@ -28,9 +29,11 @@ class Profile extends Component {
   }
 
   submit = async values => {
-    let success = await this.props.saveProfile(values);
-    let text = success ? 'Saved!' : 'Your profile could not be saved';
-    this.setState({ open: true, text: text });
+    let self = this;
+    auth0Client.socket.emit('update profile', values, function(success) {
+      let text = success ? 'Profile saved!' : 'Your profile could not be saved';
+      self.setState({ open: true, text: text });
+    })
   }
 
   handleClose = (event, reason) => {

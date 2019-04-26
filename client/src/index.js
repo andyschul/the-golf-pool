@@ -6,17 +6,15 @@ import store from './store/configureStore';
 import Routes from './routes';
 import history from './history';
 import io from 'socket.io-client';
-import { scheduleFetchData, yearlyLeaderboardFetchData, leaderboardFetchDataSuccess } from './actions';
+import { scheduleFetchDataSuccess, yearlyLeaderboardFetchDataSuccess } from './actions';
 require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 const socket = io(process.env.REACT_APP_API_URL);
-socket.on('connect', function() {
-  store.dispatch(scheduleFetchData(`${process.env.REACT_APP_API_URL}/api/schedule/${new Date().getFullYear()}`));
-  store.dispatch(yearlyLeaderboardFetchData(`${process.env.REACT_APP_API_URL}/api/schedule/${new Date().getFullYear()}/leaderboard`));
-});
 
-socket.on('leaderboard', function (data) {
-  console.log(data);
-  store.dispatch(leaderboardFetchDataSuccess(data));
+socket.on('tournament_schedule', function (schedule) {
+  store.dispatch(scheduleFetchDataSuccess(schedule));
+});
+socket.on('yearly_leaderboard', function (yearlyLeaderboard) {
+  store.dispatch(yearlyLeaderboardFetchDataSuccess(yearlyLeaderboard));
 });
 
 render(

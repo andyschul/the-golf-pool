@@ -190,18 +190,26 @@ export function leaderboardFetchDataSuccess(leaderboard) {
     };
 }
 
-export function leaderboardFetchData(url) {
-    return async (dispatch) => {
-        dispatch(leaderboardIsLoading(true));
-        let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
-        try {
-          const response = await axios.get(url, headers);
-          dispatch(leaderboardFetchDataSuccess(response.data));
-        } catch (error) {
-          dispatch(leaderboardHasErrored(true));
-        }
-        dispatch(leaderboardIsLoading(false));
-    };
+export function leaderboardFetchData(tournamentId) {
+  auth0Client.emit('leaderboard', tournamentId);
+  return {type: 'LEADERBOARD_FETCH_DATA_SUCCESS'};
+    // if (auth0Client) {
+    //   console.log('auth0client')
+    //   auth0Client.socket.emit('leaderboard', 'leaderboard from actions')
+    //   auth0Client.emit('leaderboard');
+    // }
+    // return async (dispatch) => {
+    //     dispatch(leaderboardIsLoading(true));
+    //     let headers = {headers:{ 'Authorization': `Bearer ${auth0Client.getIdToken()}` }};
+    //
+    //     try {
+    //       const response = await axios.get(url, headers);
+    //       dispatch(leaderboardFetchDataSuccess(response.data));
+    //     } catch (error) {
+    //       dispatch(leaderboardHasErrored(true));
+    //     }
+    //     dispatch(leaderboardIsLoading(false));
+    // };
 }
 
 export function yearlyLeaderboardHasErrored(bool) {

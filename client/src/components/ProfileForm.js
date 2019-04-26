@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
+import auth0Client from '../Auth/Auth';
 
 const styles = theme => ({
   container: {
@@ -40,7 +41,7 @@ const renderTextField = ({
 
 class ProfileForm extends Component {
   componentDidMount() {
-    this.props.fetchProfile(`${process.env.REACT_APP_API_URL}/api/profile`);
+    auth0Client.socket.emit('profile');
   }
   render() {
     const { classes, handleSubmit } = this.props

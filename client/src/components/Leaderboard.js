@@ -8,6 +8,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import auth0Client from '../Auth/Auth';
+
 
 function TabContainer(props) {
   return (
@@ -34,12 +36,12 @@ class Leaderboard extends Component {
   };
 
   componentDidMount() {
-    this.props.fetchLeaderboard(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/leaderboard`);
+    auth0Client.socket.emit('leaderboard', this.props.match.params.id);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
-      this.props.fetchLeaderboard(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/leaderboard`);
+      auth0Client.socket.emit('leaderboard', this.props.match.params.id);
     }
   }
   handleChange = (event, value) => {
@@ -99,9 +101,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        fetchLeaderboard: (url) => dispatch(leaderboardFetchData(url))
-    };
-};
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Leaderboard));
+export default connect(mapStateToProps, null)(withStyles(styles)(Leaderboard));

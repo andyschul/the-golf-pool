@@ -94,7 +94,7 @@ class PlayerList extends Component {
   }
 
   render() {
-    const { classes, players, groupIndex, selectPlayer } = this.props
+    const { classes, players, groupIndex, selectPlayer, locked } = this.props
     return (
       <div className={classes.root}>
         <Paper>
@@ -103,13 +103,13 @@ class PlayerList extends Component {
               <ListItemText primary={
                 <React.Fragment>
                   <Typography className={this.props.classes[groupIndex]}>
-                    {`Group ${groupIndex+1} ${this.state.locked ? ' (LOCKED)' : ''}`}
+                    {`Group ${groupIndex+1} ${locked ? ' (LOCKED)' : ''}`}
                   </Typography>
                 </React.Fragment>
               } />
             </ListItem>
             {players.length ? players.map(player => (
-              <Player key={player.id} {...player} locked={this.state.locked} onClick={() => selectPlayer(player.id, groupIndex)} />
+              <Player key={player.id} {...player} locked={locked} onClick={() => selectPlayer(player.id, groupIndex)} />
             )) :
             <ListItem>
               <ListItemText primary={

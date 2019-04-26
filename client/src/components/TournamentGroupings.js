@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import PlayerList from './PlayerList'
+import auth0Client from '../Auth/Auth';
 
 const styles = theme => ({
   root: {
@@ -27,13 +28,13 @@ class TournamentGroupings extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/groups?full=true`);
+    auth0Client.socket.emit('picks', this.props.match.params.id);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
       this.props.canSave(false);
-      this.props.fetchData(`${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/groups?full=true`);
+      auth0Client.socket.emit('picks', this.props.match.params.id);
     }
   }
 
@@ -42,28 +43,38 @@ class TournamentGroupings extends Component {
   }
 
 
+  submit = async values => {
+    let self = this;
+    auth0Client.socket.emit('update profile', values, function(success) {
+      let text = success ? 'Profile saved!' : 'Your profile could not be saved';
+      self.setState({ open: true, text: text });
+    })
+  }
+
   handlePicks = async groups => {
-    let data = {picks: []};
+    let picks = [];
     for (let group of this.props.groups) {
       let players = group.filter(p=>p.selected || p.saved);
       if (players.length) {
         let selected = players.filter(p=>p.selected).pop();
         if (selected) {
-          data.picks.push(selected);
+          picks.push(selected);
         } else {
-          data.picks.push(players.filter(p=>p.saved).pop());
+          picks.push(players.filter(p=>p.saved).pop());
         }
       }
     }
 
-    let url = `${process.env.REACT_APP_API_URL}/api/tournaments/${this.props.match.params.id}/picks`;
-    let success = await this.props.savePicks(url, data);
-    if (success) {
-      this.props.canSave(false);
-      this.setState({ open: true, text: 'Saved!' });
-    } else {
-      this.setState({ open: true, text: 'Your picks could not be saved' });
-    }
+
+    let self = this;
+    auth0Client.socket.emit('update picks', this.props.match.params.id, picks, function(success) {
+      if (success) {
+        self.props.canSave(false);
+        self.setState({ open: true, text: 'Picks saved!' });
+      } else {
+        self.setState({ open: true, text: 'Your picks could not be saved' });
+      }
+    });
   }
 
 
@@ -94,7 +105,7 @@ class TournamentGroupings extends Component {
         {groups.length ?
           <React.Fragment>
             {groups.map((group, index) => (
-              <PlayerList key={index} groupIndex={index} players={group} />
+              <PlayerList key={index} groupIndex={index} players={group} locked={true} />
             ))}
 
             <Snackbar

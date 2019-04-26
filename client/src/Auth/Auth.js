@@ -1,5 +1,7 @@
 import auth0 from 'auth0-js';
-
+import io from 'socket.io-client';
+import store from '../store/configureStore'
+import { leaderboardFetchDataSuccess, profileFetchDataSuccess, groupsFetchDataSuccess } from '../actions';
 
 class Auth {
   constructor() {
@@ -51,8 +53,23 @@ class Auth {
   setSession(authResult) {
     this.idToken = authResult.idToken;
     this.profile = authResult.idTokenPayload;
-    // set the time that the id token will expire at
     this.expiresAt = authResult.idTokenPayload.exp * 1000;
+    this.socket = io.connect(`${process.env.REACT_APP_API_URL}/private`, {
+      query: {token: authResult.idToken}
+    });
+    this.socket.on('disconnect', () => {
+      console.log('disconnecting')
+      this.socket.open();
+    });
+    this.socket.on('leaderboard', function(leaderboard) {
+      store.dispatch(leaderboardFetchDataSuccess(leaderboard))
+    });
+    this.socket.on('profile', function(profile) {
+      store.dispatch(profileFetchDataSuccess(profile))
+    });
+    this.socket.on('picks', function(picks) {
+      store.dispatch(groupsFetchDataSuccess(picks))
+    });
   }
 
   signOut() {
