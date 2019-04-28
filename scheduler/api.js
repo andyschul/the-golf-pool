@@ -5,7 +5,7 @@ const axios = require('axios');
 require('dotenv')
 const client = redis.createClient(process.env.REDIS_URL);
 const getAsync = promisify(client.get).bind(client);
-
+const email = require('./email');
 
 function groupPairings(pairings, groupNums) {
   let groupedPairings = [];
@@ -92,6 +92,12 @@ async function getTeeTimes(tournamentId) {
         let pairings = response.data.round.courses[0].pairings;
         let groups = groupPairings(pairings, 10);
         client.set(`tournaments:${tournamentId}:groups`, JSON.stringify(groups));
+        email.sendEmail({
+          from: 'thegolfpoolhost@gmail.com',
+          to: 'all',
+          subject: `Tee times for the ${response.data.name} have been posted!`,
+          text: `Visit https://thegolfpool.herokuapp.com/ to make your selections`
+        })
         return groups;
       }
       return [];

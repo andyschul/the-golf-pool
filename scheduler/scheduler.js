@@ -2,6 +2,7 @@ require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 const schedule = require('node-schedule');
 const { DateTime } = require("luxon");
 const api = require('./api');
+const email = require('./email');
 const schedulers = [];
 
 const tzConversion = {
