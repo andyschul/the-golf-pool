@@ -35,14 +35,27 @@ class Leaderboard extends Component {
   };
 
   componentDidMount() {
-    auth0Client.socket.emit('leaderboard', this.props.match.params.id);
+    this.timerID = setInterval(
+      () => this.callLeaderboard(),
+      60 * 1000
+    );
+    this.callLeaderboard();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.match.params.id !== this.props.match.params.id) {
-      auth0Client.socket.emit('leaderboard', this.props.match.params.id);
+      this.callLeaderboard();
     }
   }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  callLeaderboard() {
+    auth0Client.socket.emit('leaderboard', this.props.match.params.id);
+  }
+
   handleChange = (event, value) => {
     this.setState({ value });
   };
