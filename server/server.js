@@ -64,11 +64,13 @@ privateNamespace.use(function(socket, next){
     socket.on('update picks', async function(tournamentId, data, fn) {
       try {
         let update = await socketUpdatePicks(tournamentId, socket._id, data);
-        let picks = await socketPicks(tournamentId, socket._id);
-        socket.emit('picks', picks)
-        fn(true);
+        if (update) {
+          let picks = await socketPicks(tournamentId, socket._id);
+          socket.emit('picks', picks)
+        }
+        fn(update);
       } catch {
-        fn(false);
+        fn({});
       };
     });
 })
@@ -85,30 +87,27 @@ async function socketSchedule() {
 }
 
 async function socketUpdatePicks(tournamentId, userId, picks) {
-  const user = await User.findOne({ _id: userId });
-  let cachedTournament = await getAsync(`tournaments:${tournamentId}`);
-  cachedTournament = JSON.parse(cachedTournament);
-
-  let tournament = user.tournaments.filter(t => t.tournament_id === tournamentId).pop();
-  if (tournament) {
-    tournament.picks = picks
-  } else {
-    user.tournaments.push({
-      tournament_id: tournamentId,
-      name: cachedTournament.name,
-      start_date: cachedTournament.start_date,
-      picks: picks
-    })
-  }
-
-  user.save()
-
   let groups = await getAsync(`tournaments:${tournamentId}:groups`);
   groups = JSON.parse(groups);
-  let usertournamentData = user.tournaments.filter(t => t.tournament_id === tournamentId).pop();
-  let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
-  let retJson = groups.length ? groups.map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, saved: true } : { ...player, selected: false })) : [];
-  return retJson;
+  const user = await User.findOne({ _id: userId });
+  if (new Date(groups[0][0].tee_time) > new Date()) {
+    let cachedTournament = await getAsync(`tournaments:${tournamentId}`);
+    cachedTournament = JSON.parse(cachedTournament);
+    let tournament = user.tournaments.filter(t => t.tournament_id === tournamentId).pop();
+    if (tournament) {
+      tournament.picks = picks
+    } else {
+      user.tournaments.push({
+        tournament_id: tournamentId,
+        name: cachedTournament.name,
+        start_date: cachedTournament.start_date,
+        picks: picks
+      })
+    }
+    await user.save()
+    return true;
+  }
+  return false;
 }
 
 
@@ -116,13 +115,20 @@ async function socketPicks(tournamentId, userId) {
   const user = await User.findOne({ _id: userId });
   let groups = await getAsync(`tournaments:${tournamentId}:groups`);
   if (!groups) {
-    return [];
+    return {
+      picks: [],
+      locked: true
+    };
   }
   groups = JSON.parse(groups);
   let usertournamentData = user.tournaments.filter(t => t.tournament_id === tournamentId).pop();
-  let playerIds = usertournamentData ? usertournamentData['picks'].map(x => x.id) : [];
-  let retJson = groups.length ? groups.map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, saved: true } : { ...player, selected: false })) : [];
-  return retJson;
+  let playerIds = usertournamentData ? usertournamentData.picks.map(x => x.id) : [];
+  let picks = groups.length ? groups.map((group) => group.map(player => playerIds.includes(player.id) ? { ...player, saved: true } : { ...player, selected: false })) : [];
+  let locked = new Date(groups[0][0].tee_time) < new Date();
+  return {
+    picks: picks,
+    locked: locked
+  };
 }
 
 async function socketProfile(userId) {

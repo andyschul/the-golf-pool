@@ -70,29 +70,6 @@ const styles = theme => ({
 });
 
 class PlayerList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {locked: true};
-  }
-
-  componentDidMount() {
-    this.timerID = setInterval(
-      () => this.tick(),
-      60 * 1000
-    );
-    this.tick();
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  tick() {
-    this.setState({
-      locked: this.props.players.length ? new Date(this.props.players[0].tee_time) < new Date() : false
-    });
-  }
-
   render() {
     const { classes, players, groupIndex, selectPlayer, locked } = this.props
     return (

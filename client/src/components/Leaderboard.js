@@ -30,9 +30,10 @@ const styles = theme => ({
 });
 
 class Leaderboard extends Component {
-  state = {
-    value: 0,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {value: 0};
+  }
 
   componentDidMount() {
     this.timerID = setInterval(

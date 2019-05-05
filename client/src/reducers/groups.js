@@ -16,14 +16,20 @@ export function groupsIsLoading(state = false, action) {
     }
 }
 
-export function groups(state = [], action) {
+export function groups(state = {locked: true, picks: []}, action) {
     switch (action.type) {
         case 'GROUPS_FETCH_DATA_SUCCESS':
             return action.groups;
         case 'SELECT_PLAYER':
-          return state.map((group, idx) => idx !== action.groupIndex ? group : (group.map(player => player.id === action.id ? { ...player, selected: true } : { ...player, selected: false })));
+          return {
+            ...state,
+            picks: state.picks.map((group, idx) => idx !== action.groupIndex ? group : (group.map(player => player.id === action.id ? { ...player, selected: true } : { ...player, selected: false })))
+          }
         case 'CANCEL_PICKS':
-          return state.map(group => group.map(player => ({ ...player, selected: false })));
+          return {
+            ...state,
+            picks: state.picks.map(group => group.map(player => ({ ...player, selected: false })))
+          }
         default:
             return state;
     }

@@ -42,7 +42,6 @@ class TournamentGroupings extends Component {
     this.props.canSave(false);
   }
 
-
   submit = async values => {
     let self = this;
     auth0Client.socket.emit('update profile', values, function(success) {
@@ -53,7 +52,7 @@ class TournamentGroupings extends Component {
 
   handlePicks = async groups => {
     let picks = [];
-    for (let group of this.props.groups) {
+    for (let group of this.props.groups.picks) {
       let players = group.filter(p=>p.selected || p.saved);
       if (players.length) {
         let selected = players.filter(p=>p.selected).pop();
@@ -64,7 +63,6 @@ class TournamentGroupings extends Component {
         }
       }
     }
-
 
     let self = this;
     auth0Client.socket.emit('update picks', this.props.match.params.id, picks, function(success) {
@@ -77,16 +75,14 @@ class TournamentGroupings extends Component {
     });
   }
 
-
+  handleClose = (event, reason) => {
+    this.setState({ open: false });
+  };
 
   cancelPicks() {
     this.props.cancelPicks();
     this.props.canSave(false);
   }
-
-  handleClose = (event, reason) => {
-    this.setState({ open: false });
-  };
 
   render() {
     const { classes, groups, groupsCanSave, isLoading } = this.props;
@@ -102,10 +98,10 @@ class TournamentGroupings extends Component {
     } else {
       return (
         <div className={classes.root}>
-        {groups.length ?
+        {groups.picks.length ?
           <React.Fragment>
-            {groups.map((group, index) => (
-              <PlayerList key={index} groupIndex={index} players={group} locked={true} />
+            {groups.picks.map((group, index) => (
+              <PlayerList key={index} groupIndex={index} players={group} locked={groups.locked} />
             ))}
 
             <Snackbar
