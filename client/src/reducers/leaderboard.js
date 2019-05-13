@@ -32,12 +32,12 @@ export function leaderboard(state = {view: 'group', tournamentStatus: '', leader
             let tle = state.tournamentLeaderboard.filter(x=>x.expanded).map(r=>r.id)
             return {
               ...action.leaderboard,
-              leaderboard: action.leaderboard.leaderboard.map(item =>
+              leaderboard: action.leaderboard.leaderboard.length ? action.leaderboard.leaderboard.map(item =>
                 gle.includes(item.id) ? { ...item, expanded: true } : item
-              ),
-              tournamentLeaderboard: action.leaderboard.tournamentLeaderboard.map(item =>
+              ) : [],
+              tournamentLeaderboard: action.leaderboard.leaderboard.length ? action.leaderboard.tournamentLeaderboard.map(item =>
                 tle.includes(item.id) ? { ...item, expanded: true } : item
-              )
+              ) : []
             };
         case 'LEADERBOARD_EXPAND_ROW':
             return {

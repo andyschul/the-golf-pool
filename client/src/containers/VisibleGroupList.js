@@ -5,7 +5,10 @@ import TournamentGroupings from '../components/TournamentGroupings'
 const getVisibleGroups = (groups, filter) => {
   switch (filter) {
     case 'SHOW_SAVED':
-      return groups.map(group => group.filter(t => t.saved));
+      return {
+        ...groups,
+        picks: groups.picks.map(group => group.filter(t => t.saved))
+      }
     case 'SHOW_ALL':
     default:
       return groups
