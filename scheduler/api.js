@@ -31,7 +31,7 @@ function groupPairings(pairings, groupNums) {
 }
 
 function createPlayers(leaderboard) {
-  return Object.assign({}, ...leaderboard.map(item => ({[item['id']]: item})));
+  return Object.assign({}, ...leaderboard.leaderboard.map(item => ({[item['id']]: item})));
 }
 
 async function getYearlySchedule(year) {
@@ -67,8 +67,8 @@ async function getLeaderboard(tournamentId) {
   return axios.get(`${process.env.SPORTS_RADAR_URI}/leaderboard/pga/${currentYear}/tournaments/${tournamentId}/leaderboard.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
     .then(function (response) {
       if (response.data.leaderboard) {
-        let leaderboard = JSON.stringify(response.data.leaderboard)
-        let players = JSON.stringify(createPlayers(response.data.leaderboard))
+        let leaderboard = JSON.stringify(response.data)
+        let players = JSON.stringify(createPlayers(response.data))
         client.set(`tournaments:${tournamentId}:leaderboard`, leaderboard);
         client.set(`tournaments:${tournamentId}:players`, players);
         return response.data.leaderboard;
