@@ -31,7 +31,7 @@ function groupPairings(pairings, groupNums) {
 }
 
 function createPlayers(leaderboard) {
-  return Object.assign({}, ...leaderboard.leaderboard.map(item => ({[item['id']]: item})));
+  return Object.assign({}, ...leaderboard.map(item => ({[item['id']]: item})));
 }
 
 async function getYearlySchedule(year) {

@@ -15,7 +15,7 @@ import Paper from '@material-ui/core/Paper';
 
 import history from '../history';
 
-const backgroundImage = 'https://golfadvisor.brightspotcdn.com/dims4/default/97d3000/2147483647/strip/true/crop/5184x3096+0+180/resize/1440x860!/format/jpg/quality/90/?url=https%3A%2F%2Fgolfadvisor.brightspotcdn.com%2F85%2F8a%2F0e11db05b999fe0c93320356b469%2Fp.php';
+const backgroundImage = 'https://www.pebblebeach.com/content/uploads/henebry_201512_pb10_aerial_onaclearday-webversion.jpg';
 const backgroundImage2 = 'https://wallpaperbro.com/img/4442.jpg';
 
 const styles = theme => ({

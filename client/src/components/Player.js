@@ -5,7 +5,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 const Player = ({ onClick, selected, tee_time, first_name, last_name, country, saved, locked }) => (
   <ListItem
     button
-    disabled={locked}
+    disabled={saved || locked}
     selected={selected}
     onClick={onClick}
   >
