@@ -37,6 +37,7 @@ class Routes extends Component {
   }
 
   async componentDidMount() {
+    console.log('attempting silent signin')
     if (history.location === '/callback') {
       this.setState({checkingSession:false});
       return;

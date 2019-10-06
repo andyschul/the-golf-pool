@@ -15,8 +15,7 @@ import Paper from '@material-ui/core/Paper';
 
 import history from '../history';
 
-const backgroundImage = 'https://www.pebblebeach.com/content/uploads/henebry_201512_pb10_aerial_onaclearday-webversion.jpg';
-const backgroundImage2 = 'https://wallpaperbro.com/img/4442.jpg';
+const backgroundImage = 'http://www.mackenzieandebert.co.uk/image/Portrush8th-min.jpg';
 
 const styles = theme => ({
   root: {

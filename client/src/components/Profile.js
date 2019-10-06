@@ -1,63 +1,112 @@
-import React, { Component } from 'react';
-import ProfileForm from './ProfileForm'
-import { withStyles } from '@material-ui/core/styles';
+import gql from 'graphql-tag';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper'
-import Snackbar from '@material-ui/core/Snackbar'
-import auth0Client from '../Auth/Auth';
+import TextField from '@material-ui/core/TextField'
+import FormControl from '@material-ui/core/FormControl';
+import Button from '@material-ui/core/Button';
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: theme.spacing.unit * 9,
+    marginTop: theme.spacing(9),
     ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     maxWidth: 700,
     marginLeft: 'auto',
     marginRight: 'auto',
   },
-  header: {
-    paddingBottom: theme.spacing.unit * 2,
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200,
   },
-});
+}));
 
-class Profile extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {open: false, text: ''};
+const GET_USER = gql`
+  {
+    user {
+      firstName
+      lastName
+    }
   }
+`;
 
-  submit = async values => {
-    let self = this;
-    auth0Client.socket.emit('update profile', values, function(success) {
-      let text = success ? 'Profile saved!' : 'Your profile could not be saved';
-      self.setState({ open: true, text: text });
-    })
+const UPDATE_USER = gql`
+  mutation updateProfile($firstName: String, $lastName: String) {
+    updateUser(firstName: $firstName, lastName: $lastName) {
+      firstName
+      lastName
+    }
   }
+`;
 
-  handleClose = (event, reason) => {
-    this.setState({ open: false });
-  };
+function Profile() {
+    const classes = useStyles();
+    const { loading, error, data, updateQuery } = useQuery(GET_USER);
+    const [updateUser] = useMutation(UPDATE_USER);
+    if (loading) return 'Loading...';
+    if (error) return `Error! ${error.message}`;
 
-  render() {
-    const { classes } = this.props;
+    function handleSubmit(e) {
+      e.preventDefault();
+      updateUser({ variables: { firstName: data.user.firstName, lastName: data.user.lastName } });
+    }
+
+    function handleFirstChange(e) {
+      updateQuery(x=>{
+        return {
+          user: {
+            ...x.user,
+            firstName: e.target.value
+          }
+        }
+      });
+    }
+
+    function handleLastChange(e) {
+      updateQuery(x=>{
+        return {
+          user: {
+            ...x.user,
+            lastName: e.target.value
+          }
+        }
+      });
+    }
+
     return (
       <React.Fragment>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'center'
-          }}
-          open={this.state.open}
-          autoHideDuration={2000}
-          onClose={this.handleClose}
-          message={<span id="message-id">{this.state.text}</span>}
-        />
         <Paper className={classes.root} elevation={1}>
-          <ProfileForm onSubmit={this.submit} />
+          <form
+            onSubmit={handleSubmit}
+          >
+            <TextField
+              id="first-name"
+              label="First Name"
+              margin="normal"
+              on
+              className={classes.textField}
+              value={data.user.firstName}
+              onChange={handleFirstChange}
+            />
+            <TextField
+              id="first-name"
+              label="Last Name"
+              margin="normal"
+              on
+              className={classes.textField}
+              value={data.user.lastName}
+              onChange={handleLastChange}
+            />
+            <FormControl fullWidth>
+              <Button variant="contained" color="primary" type="submit">Save</Button>
+            </FormControl>
+          </form>
         </Paper>
       </React.Fragment>
-    )
+    );
   }
-}
 
-export default withStyles(styles)(Profile);
+  export default Profile;
