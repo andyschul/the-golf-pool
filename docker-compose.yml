@@ -23,7 +23,17 @@ services:
       - 5000:5000
       - 9229:9229
     command:
-      - nodemon
-      - "--inspect-brk=0.0.0.0"
+      - node
       - "server.js"
     container_name: tgp_server
+  scheduler:
+    build: ./scheduler
+    env_file:
+      - ./scheduler/.env
+    volumes:
+      - ./scheduler:/scheduler
+      - /scheduler/node_modules
+    command:
+      - node
+      - "scheduler.js"
+    container_name: tgp_scheduler
