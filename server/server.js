@@ -177,8 +177,11 @@ async function socketYearlyLeaderboard() {
       if (!tournamentPlayerData[tour.tournament_id]) {
         continue;
       }
-      let picks = tournamentPlayerData[tour.tournament_id] ? tour.picks.map(player => (
-        {
+      let picks = tournamentPlayerData[tour.tournament_id] ? tour.picks.map(player => {
+        if (!tournamentPlayerData[tour.tournament_id][player.id]) {
+          return null;
+        }
+        return {
           id: tournamentPlayerData[tour.tournament_id][player.id].id,
           first_name: tournamentPlayerData[tour.tournament_id][player.id].first_name,
           last_name: tournamentPlayerData[tour.tournament_id][player.id].last_name,
@@ -188,16 +191,16 @@ async function socketYearlyLeaderboard() {
           money: tournamentPlayerData[tour.tournament_id][player.id].money || 0,
           strokes: tournamentPlayerData[tour.tournament_id][player.id].strokes,
         }
-      )) : [];
-
-      reducedPicks = picks.reduce((accumulator, item) => {
+      }) : [];
+      let filteredPicks = picks.filter((pick) => (pick != null));
+      let reducedPicks = filteredPicks.reduce((accumulator, item) => {
         accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money;
         accumulator.totalMadeCuts = (accumulator.totalMadeCuts || 0) + (item.status === 'CUT' ? 0 : 1);
         accumulator.totalScore = (accumulator.totalScore || 0) + item.score;
         accumulator.totalPosition = (accumulator.totalPosition || 0) + item.position;
         return accumulator;
       }, {});
-      reducedPicks['avgPosition'] = reducedPicks['totalPosition'] / picks.length;
+      reducedPicks['avgPosition'] = reducedPicks['totalPosition'] / filteredPicks.length;
       tData.push({
         name: tour.name,
         id: tour.tournament_id,
@@ -247,8 +250,11 @@ async function socketLeaderboard(tournamentId, userId) {
 
   leaderboardData = users.map(user => {
     let tournament = user._doc.tournaments.filter(t => t.tournament_id === tournamentId).pop();
-    picks = tournament.picks.map(player => (
-      {
+    picks = tournament.picks.map(player => {
+      if (!players[player.id]) {
+        return null;
+      }
+      return {
         id: players[player.id].id,
         first_name: players[player.id].first_name,
         last_name: players[player.id].last_name,
@@ -258,25 +264,26 @@ async function socketLeaderboard(tournamentId, userId) {
         money: players[player.id].money || null,
         strokes: players[player.id].strokes,
       }
-    ));
+    });
+    let filteredPicks = picks.filter((pick) => (pick != null));
 
-    picks.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));
+    filteredPicks.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));
 
-    reducedPicks = picks.reduce((accumulator, item) => {
+    reducedPicks = filteredPicks.reduce((accumulator, item) => {
       accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money || 0;
       accumulator.totalMadeCuts = (accumulator.totalMadeCuts || 0) + (item.status === 'CUT' ? 0 : 1);
       accumulator.totalScore = (accumulator.totalScore || 0) + item.score;
       accumulator.totalPosition = (accumulator.totalPosition || 0) + item.position;
       return accumulator;
     }, {});
-    reducedPicks.avgPosition = reducedPicks.totalPosition / picks.length;
+    reducedPicks.avgPosition = reducedPicks.totalPosition / filteredPicks.length;
 
     return {
       id: user.id,
       username: user._doc.username,
       first_name: user._doc.first_name,
       last_name: user._doc.last_name,
-      picks: picks,
+      picks: filteredPicks,
       ...reducedPicks
     }
   })
