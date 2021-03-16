@@ -228,6 +228,100 @@ async function socketYearlyLeaderboard() {
   return leaderboard;
 }
 
+function getEstimatedEarnings(players) {
+  const percentages = {
+    1: .18000,
+    2: .10900,
+    3: .06900,
+    4: .04900,
+    5: .04100,
+    6: .03625,
+    7: .03375,
+    8: .03125,
+    9: .02925,
+    10: .02725,
+    11: .02525,
+    12: .02325,
+    13: .02125,
+    14: .01925,
+    15: .01825,
+    16: .01725,
+    17: .01625,
+    18: .01525,
+    19: .01425,
+    20: .01325,
+    21: .01225,
+    22: .01125,
+    23: .01045,
+    24: .00965,
+    25: .00885,
+    26: .00805,
+    27: .00775,
+    28: .00745,
+    29: .00715,
+    30: .00685,
+    31: .00655,
+    32: .00625,
+    33: .00595,
+    34: .00570,
+    35: .00545,
+    36: .00520,
+    37: .00495,
+    38: .00475,
+    39: .00455,
+    40: .00435,
+    41: .00415,
+    42: .00395,
+    43: .00375,
+    44: .00355,
+    45: .00335,
+    46: .00315,
+    47: .00295,
+    48: .00279,
+    49: .00265,
+    50: .00257,
+    51: .00251,
+    52: .00245,
+    53: .00241,
+    54: .00237,
+    55: .00235,
+    56: .00233,
+    57: .00231,
+    58: .00229,
+    59: .00227,
+    60: .00225,
+    61: .00223,
+    62: .00221,
+    63: .00219,
+    64: .00217,
+    65: .00215
+  };
+
+  let newPercentages = {};
+  let count = {};
+
+  for (let p of players) {
+      if (!count.hasOwnProperty(p.position)) {
+          count[p.position] = 0;
+      }
+      count[p.position]++;
+  }
+
+  for (let c in count) {
+    let n = Number(c);
+    if (!percentages.hasOwnProperty(n)) {
+      newPercentages[c] = 0
+      continue;
+    }
+    let totPercentage = 0;
+    for (let step = n; step < n + count[c]; step++) {
+        totPercentage += percentages[step];
+    }
+    newPercentages[c] = totPercentage / count[c];
+  }
+  return newPercentages;
+}
+
 async function socketLeaderboard(tournamentId, userId) {
   let leaderboard = await getAsync(`tournaments:${tournamentId}:leaderboard`);
   if (!leaderboard) {
@@ -237,6 +331,8 @@ async function socketLeaderboard(tournamentId, userId) {
     }
   }
   leaderboard = JSON.parse(leaderboard);
+
+  const earningsMap = getEstimatedEarnings(leaderboard.purse, leaderboard.leaderboard);
 
   const users = await User.find({'tournaments.tournament_id': tournamentId});
 
@@ -262,6 +358,7 @@ async function socketLeaderboard(tournamentId, userId) {
         score: players[player.id].score,
         status: players[player.id].status || null,
         money: players[player.id].money || null,
+        estMoney: Math.round(leaderboard.purse * earningsMap[players[player.id].position]),
         strokes: players[player.id].strokes,
       }
     });
@@ -271,6 +368,7 @@ async function socketLeaderboard(tournamentId, userId) {
 
     reducedPicks = filteredPicks.reduce((accumulator, item) => {
       accumulator.totalMoney = (accumulator.totalMoney || 0) + item.money || 0;
+      accumulator.totalEstMoney = (accumulator.totalEstMoney || 0) + item.estMoney || 0;
       accumulator.totalMadeCuts = (accumulator.totalMadeCuts || 0) + (item.status === 'CUT' ? 0 : 1);
       accumulator.totalScore = (accumulator.totalScore || 0) + item.score;
       accumulator.totalPosition = (accumulator.totalPosition || 0) + item.position;
@@ -291,10 +389,10 @@ async function socketLeaderboard(tournamentId, userId) {
   leaderboard.status === 'closed' ?
     leaderboardData.sort((a,b) => (a.totalMoney > b.totalMoney) ? -1 : ((b.totalMoney > a.totalMoney) ? 1 : 0))
     :
-    leaderboardData.sort((a,b) => (a.totalScore > b.totalScore) ? 1 : ((b.totalScore > a.totalScore) ? -1 : 0));
+    leaderboardData.sort((a,b) => (a.totalEstMoney > b.totalEstMoney) ? -1 : ((b.totalEstMoney > a.totalEstMoney) ? 1 : 0))
 
   let l = leaderboard.leaderboard.reduce((obj, item) => {
-    obj[item.id] = {...item, selected: userPlayerIds.includes(item.id), picks: []};
+    obj[item.id] = {...item, selected: userPlayerIds.includes(item.id), picks: [], estMoney: Math.round(leaderboard.purse * earningsMap[item.position])};
     return obj;
   }, {})
   let pos = 1;

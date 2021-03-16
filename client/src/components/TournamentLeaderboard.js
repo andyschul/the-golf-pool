@@ -26,7 +26,7 @@ class TournamentLeaderboard extends Component {
   }
 
   formatMoney(money) {
-    if (!money) return 'CUT';
+    if (!money) return '-';
     return '$'+money.toLocaleString();
   }
 
@@ -53,6 +53,9 @@ class TournamentLeaderboard extends Component {
                       {leaderboard.tournamentStatus === 'closed' && (
                         <TableCell align="right">Money</TableCell>
                       )}
+                      {leaderboard.tournamentStatus !== 'closed' && (
+                        <TableCell align="right">Est. Money</TableCell>
+                      )}
                       <TableCell align="right">Count</TableCell>
                       <TableCell align="right">Score</TableCell>
                     </TableRow>
@@ -72,6 +75,9 @@ class TournamentLeaderboard extends Component {
                           {leaderboard.tournamentStatus === 'closed' && (
                             <TableCell align="right">{this.formatMoney(player.money)}</TableCell>
                           )}
+                          {leaderboard.tournamentStatus !== 'closed' && (
+                            <TableCell align="right">{this.formatMoney(player.estMoney)}</TableCell>
+                          )}
                           <TableCell align="right">{player.picks.length || '-'}</TableCell>
                           <TableCell align="right">{this.formatScore(player.score)}</TableCell>
                         </TableRow>
@@ -86,6 +92,9 @@ class TournamentLeaderboard extends Component {
                                     {leaderboard.tournamentStatus === 'closed' && (
                                       <TableCell>Money</TableCell>
                                     )}
+                                    {leaderboard.tournamentStatus !== 'closed' && (
+                                      <TableCell>Est. Money</TableCell>
+                                    )}
                                     <TableCell align="right">Made Cuts</TableCell>
                                     <TableCell align="right">Avg Position</TableCell>
                                     <TableCell align="right">Combined Score</TableCell>
@@ -98,6 +107,9 @@ class TournamentLeaderboard extends Component {
                                       <TableCell>{user.username} {user.first_name ? `(${user.first_name} ${user.last_name})` : ''}</TableCell>
                                       {leaderboard.tournamentStatus === 'closed' && (
                                         <TableCell>{this.formatMoney(user.totalMoney) || 0}</TableCell>
+                                      )}
+                                      {leaderboard.tournamentStatus !== 'closed' && (
+                                        <TableCell>{this.formatMoney(user.totalEstMoney) || 0}</TableCell>
                                       )}
                                       <TableCell align="right">{user.totalMadeCuts || '-'}</TableCell>
                                       <TableCell align="right">{user.avgPosition}</TableCell>

@@ -28,7 +28,7 @@ class GroupLeaderboard extends Component {
   }
 
   formatMoney(money) {
-    if (!money) return 'CUT';
+    if (!money) return '-';
     return '$'+money.toLocaleString();
   }
 
@@ -68,6 +68,9 @@ class GroupLeaderboard extends Component {
                   {leaderboard.tournamentStatus === 'closed' && (
                     <TableCell align="right">Money</TableCell>
                   )}
+                  {leaderboard.tournamentStatus !== 'closed' && (
+                    <TableCell align="right">Est. Money</TableCell>
+                  )}
                   <TableCell align="right">Made Cuts</TableCell>
                   <TableCell align="right">Avg Position</TableCell>
                   <TableCell align="right">Combined Score</TableCell>
@@ -89,6 +92,9 @@ class GroupLeaderboard extends Component {
                       {leaderboard.tournamentStatus === 'closed' && (
                         <TableCell align="right">{this.formatMoney(user.totalMoney)}</TableCell>
                       )}
+                      {leaderboard.tournamentStatus !== 'closed' && (
+                        <TableCell align="right">{this.formatMoney(user.totalEstMoney)}</TableCell>
+                      )}
                       <TableCell align="right">{user.totalMadeCuts}</TableCell>
                       <TableCell align="right">{user.avgPosition}</TableCell>
                       <TableCell align="right">{this.formatScore(user.totalScore)}</TableCell>
@@ -104,6 +110,9 @@ class GroupLeaderboard extends Component {
                                 {leaderboard.tournamentStatus === 'closed' && (
                                   <TableCell>Money</TableCell>
                                 )}
+                                {leaderboard.tournamentStatus !== 'closed' && (
+                                  <TableCell>Est. Money</TableCell>
+                                )}
                                 <TableCell align="right">Score</TableCell>
                               </TableRow>
                             </TableHead>
@@ -114,6 +123,9 @@ class GroupLeaderboard extends Component {
                                   <TableCell>{player.first_name + ' ' + player.last_name}</TableCell>
                                   {leaderboard.tournamentStatus === 'closed' && (
                                     <TableCell>{this.formatMoney(player.money) || 0}</TableCell>
+                                  )}
+                                  {leaderboard.tournamentStatus !== 'closed' && (
+                                    <TableCell>{this.formatMoney(player.estMoney) || 0}</TableCell>
                                   )}
                                   <TableCell align="right">{this.formatScore(player.score)}</TableCell>
                                 </TableRow>
