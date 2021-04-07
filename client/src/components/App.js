@@ -15,7 +15,7 @@ import Paper from '@material-ui/core/Paper';
 
 import history from '../history';
 
-const backgroundImage = 'https://www.pebblebeach.com/content/uploads/henebry_201512_pb10_aerial_onaclearday-webversion.jpg';
+const backgroundImage = process.env.REACT_APP_BACKGROUND_IMAGE;
 
 const styles = theme => ({
   root: {
