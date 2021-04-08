@@ -332,7 +332,7 @@ async function socketLeaderboard(tournamentId, userId) {
   }
   leaderboard = JSON.parse(leaderboard);
 
-  const earningsMap = getEstimatedEarnings(leaderboard.purse, leaderboard.leaderboard);
+  const earningsMap = getEstimatedEarnings(leaderboard.leaderboard);
 
   const users = await User.find({'tournaments.tournament_id': tournamentId});
 
