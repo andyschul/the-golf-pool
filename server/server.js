@@ -315,7 +315,7 @@ function getEstimatedEarnings(players) {
     }
     let totPercentage = 0;
     for (let step = n; step < n + count[c]; step++) {
-        totPercentage += percentages[step];
+        totPercentage += percentages[step] || 0;
     }
     newPercentages[c] = totPercentage / count[c];
   }
