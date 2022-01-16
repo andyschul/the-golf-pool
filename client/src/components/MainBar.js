@@ -68,7 +68,7 @@ class MainBar extends React.Component {
   };
 
   render() {
-    const { classes, schedule, groupVisibilityFilter, leaderboardVisibilityFilter, match } = this.props;
+    const { classes, schedule, groupVisibilityFilter, leaderboardVisibilityFilter, match, profile } = this.props;
 
     const sideList = (
       <div className={classes.list}>
@@ -110,6 +110,13 @@ class MainBar extends React.Component {
             <ListItemIcon><PersonIcon /></ListItemIcon>
             <ListItemText primary='Profile' />
           </ListItem>
+          {profile.admin ? 
+            <ListItem button onClick={this.goTo.bind(this, 'admin')}>
+              <ListItemIcon><PersonIcon /></ListItemIcon>
+              <ListItemText primary='Admin' />
+            </ListItem> :
+            ''
+          }
           <ListItem button onClick={this.handleLogout}>
             <ListItemIcon><ExitToApp /></ListItemIcon>
             <ListItemText primary='Logout' />
@@ -198,6 +205,7 @@ MainBar.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
+    profile: state.profile,
     schedule: state.schedule,
     groupVisibilityFilter: state.groupVisibilityFilter,
     leaderboardVisibilityFilter: state.leaderboardVisibilityFilter,

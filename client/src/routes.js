@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import App from './components/App';
 import Profile from './components/Profile';
+import Admin from './components/Admin';
 import Leaderboard from './components/Leaderboard';
 import VisibleGroupList from './containers/VisibleGroupList';
 import MainBar from './components/MainBar';
@@ -57,6 +58,7 @@ class Routes extends Component {
         <Route exact path='/' component={MainBar} />
         <Route exact path='/' component={App} />
         <SecuredRoute path="/profile" component={Profile} checkingSession={this.state.checkingSession} />
+        <SecuredRoute path="/admin" component={Admin} checkingSession={this.state.checkingSession} />
         <SecuredRoute path="/tournaments/:id/groups" component={VisibleGroupList} checkingSession={this.state.checkingSession} />
         <SecuredRoute path="/tournaments/:id/leaderboard" component={Leaderboard} checkingSession={this.state.checkingSession} />
       </div>

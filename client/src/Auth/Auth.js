@@ -70,6 +70,7 @@ class Auth {
     this.socket.on('picks', function(picks) {
       store.dispatch(groupsFetchDataSuccess(picks))
     });
+    this.socket.emit('profile');
   }
 
   signOut() {

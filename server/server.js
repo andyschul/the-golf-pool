@@ -136,6 +136,7 @@ async function socketProfile(userId) {
   return {
     firstName: user.first_name,
     lastName: user.last_name,
+    admin: user.admin,
   }
 }
 

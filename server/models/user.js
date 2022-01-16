@@ -6,6 +6,7 @@ const UserSchema = new Schema({
     email: String,
     first_name: String,
     last_name: String,
+    admin: Boolean,
     tournaments: [{ tournament_id: String, name: String, start_date: String, picks: [{ id: String, first_name: String, last_name: String, country: String, }] }]
 });
 
