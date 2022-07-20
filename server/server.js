@@ -167,7 +167,7 @@ async function socketYearlyLeaderboard() {
     }
   }
 
-  let users = await User.find({});
+  let users = await User.find({'active': true});
   let leaderboard = [];
 
   for (let user of users) {
@@ -334,7 +334,7 @@ async function socketLeaderboard(tournamentId, userId) {
 
   const earningsMap = getEstimatedEarnings(leaderboard.leaderboard);
 
-  const users = await User.find({'tournaments.tournament_id': tournamentId});
+  const users = await User.find({'tournaments.tournament_id': tournamentId, 'active': true});
 
   const user = await User.findOne({ _id: userId });
   let usertournamentData = user.tournaments.filter(t => t.tournament_id === tournamentId).pop();
