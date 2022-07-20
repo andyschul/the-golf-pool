@@ -32,6 +32,12 @@ async function createSchedulers(year) {
     let teeTimeSchedule = schedule.scheduleJob({ start: teeTimesStartDate, end: tournamentStartDate, rule: teeTimeRule, tz: tz }, async function(){
       let teeTimes = await api.getTeeTimes(tournament.id);
       if (teeTimes.length) {
+        email.sendEmail({
+          to: 'abschultz20@gmail.com',
+          from: 'thegolfpoolnoreply@gmail.com',
+          subject: `${tournament.name} tee times are out!`,
+          html: '<strong>Visit https://thegolfpool.herokuapp.com to make your selections!</strong>',
+        });
         this.cancel();
       }
     });
