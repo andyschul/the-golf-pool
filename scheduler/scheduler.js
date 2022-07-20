@@ -28,6 +28,7 @@ async function createSchedulers(year) {
 
     let teeTimeRule = new schedule.RecurrenceRule();
     teeTimeRule.hour = [8, 12, 16];
+    teeTimeRule.minute = 0;
     let teeTimeSchedule = schedule.scheduleJob({ start: teeTimesStartDate, end: tournamentStartDate, rule: teeTimeRule, tz: tz }, async function(){
       let teeTimes = await api.getTeeTimes(tournament.id);
       if (teeTimes.length) {
