@@ -8,7 +8,11 @@ const getAsync = promisify(client.get).bind(client);
 const User = require('./models/user');
 const jwt = require('jsonwebtoken');
 const jwksRsa = require('jwks-rsa');
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN
+  }
+});
 const privateNamespace = io.of('/private');
 
 io.on('connection', async function(socket){
