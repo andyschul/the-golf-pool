@@ -1,4 +1,7 @@
-const server = require('http').createServer();
+const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
 require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 const port = process.env.PORT || 5000;
 const redis = require('redis')
@@ -8,11 +11,15 @@ const getAsync = promisify(client.get).bind(client);
 const User = require('./models/user');
 const jwt = require('jsonwebtoken');
 const jwksRsa = require('jwks-rsa');
-const io = require('socket.io')(server, {
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
   cors: {
     origin: process.env.CORS_ORIGIN
   }
 });
+
 const privateNamespace = io.of('/private');
 
 io.on('connection', async function(socket){
@@ -415,4 +422,4 @@ async function socketLeaderboard(tournamentId, userId) {
   }
 }
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+httpServer.listen(port, () => console.log(`Express listening on port ${port}`));
