@@ -30,7 +30,7 @@ io.on('connection', async function(socket){
 });
 
 privateNamespace.use(function(socket, next){
-  if (socket.handshake.query && socket.handshake.query.token){
+  if (socket.handshake.auth && socket.handshake.query.token){
     let client = jwksRsa({
       jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
     });
@@ -41,7 +41,7 @@ privateNamespace.use(function(socket, next){
       });
     }
 
-    jwt.verify(socket.handshake.query.token, getKey, process.env.AUTH0_CLIENT_SECRET, function(err, decoded) {
+    jwt.verify(socket.handshake.auth.token, getKey, process.env.AUTH0_CLIENT_SECRET, function(err, decoded) {
       if(err) return next(new Error('Authentication error'));
       socket._id = decoded.sub.split('|')[1];
       next();
