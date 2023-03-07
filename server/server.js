@@ -30,7 +30,7 @@ io.on('connection', async function(socket){
 });
 
 privateNamespace.use(function(socket, next){
-  if (socket.handshake.auth && socket.handshake.query.token){
+  if (socket.handshake.auth && socket.handshake.auth.token){
     let client = jwksRsa({
       jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
     });
