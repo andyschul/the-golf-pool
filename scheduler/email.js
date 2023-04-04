@@ -1,21 +1,29 @@
-const sgMail = require('@sendgrid/mail')
+const { EmailClient } = require("@azure/communication-email");
+require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 const User = require('./models/user');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
+const connectionString = process.env['COMMUNICATION_SERVICES_CONNECTION_STRING'];
+const emailClient = new EmailClient(connectionString);
 
-async function sendEmail(mailOptions) {
-  if (mailOptions.to === 'all') {
-    const users = await User.find({active: true});
-    mailOptions.to = users.map(user => user.email).join(',');
+async function sendEmail(message) {
+  try {
+    if (message.recipients.to === 'all') {
+      const users = await User.find({active: true});
+      message.recipients.to = users.map(user => {
+        const displayName = user.first_name ? `${user.first_name} ${user.last_name}` : `${user.username}`;
+        return {
+          address: user.email,
+          displayName: displayName,
+        }
+      });
+    }
+    console.log(JSON.stringify(message))
+    const poller = await emailClient.beginSend(message);
+    const response = await poller.pollUntilDone();
+    console.log(response)
+  } catch (e) {
+    console.log(e);
   }
-  sgMail
-    .send(mailOptions)
-    .then(() => {
-      console.log('Email sent')
-    })
-    .catch((error) => {
-      console.error(error)
-    })
 }
-
+  
 module.exports = { sendEmail };

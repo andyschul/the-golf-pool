@@ -2,7 +2,7 @@ require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 const schedule = require('node-schedule');
 const { DateTime } = require("luxon");
 const api = require('./api');
-const email = require('./email');
+const { sendEmail } = require('./email');
 const schedulers = [];
 
 const tzConversion = {
@@ -32,11 +32,15 @@ async function createSchedulers(year) {
     let teeTimeSchedule = schedule.scheduleJob({ start: teeTimesStartDate, end: tournamentStartDate, rule: teeTimeRule, tz: tz }, async function(){
       let teeTimes = await api.getTeeTimes(tournament.id);
       if (teeTimes.length) {
-        email.sendEmail({
-          to: 'abschultz20@gmail.com',
-          from: 'thegolfpoolnoreply@gmail.com',
-          subject: `${tournament.name} tee times are out!`,
-          html: '<strong>Visit https://thegolfpool.herokuapp.com to make your selections!</strong>',
+        await sendEmail({
+          senderAddress: "<TheGolfPool@9beec9a2-80be-49da-b674-99cf2949b2df.azurecomm.net>",
+          content: {
+            subject: `Tee times for ${tournament.name} have been posted!`,
+            plainText: "Visit https://thegolfpool.azurewebsites.net to make your selections",
+          },
+          recipients: {
+            to: 'all',
+          },
         });
         this.cancel();
       }

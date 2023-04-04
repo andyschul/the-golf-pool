@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sendgrid/mail": "^7.7.0",
+    "@azure/communication-email": "^1.0.0",
     "axios": "^0.21.2",
     "dotenv": "^7.0.0",
     "luxon": "^1.12.1",
