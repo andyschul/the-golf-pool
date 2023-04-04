@@ -79,18 +79,18 @@ async function getLeaderboard(tournamentId) {
     });
 }
 
-async function getTeeTimes(tournamentId) {
-  let teeTimes = await getAsync(`tournaments:${tournamentId}:groups`);
+async function getTeeTimes(tournament) {
+  let teeTimes = await getAsync(`tournaments:${tournament.id}:groups`);
   if (teeTimes) {
     return JSON.parse(teeTimes);
   }
   let currentYear = (new Date()).getFullYear();
-  return axios.get(`${process.env.SPORTS_RADAR_URI}/teetimes/pga/${currentYear}/tournaments/${tournamentId}/rounds/1/teetimes.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
+  return axios.get(`${process.env.SPORTS_RADAR_URI}/teetimes/pga/${currentYear}/tournaments/${tournament.id}/rounds/1/teetimes.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
     .then(async function (response) {
       if (response.data.round && response.data.round.courses.length) {
         let pairings = response.data.round.courses[0].pairings;
         let groups = groupPairings(pairings, 10);
-        client.set(`tournaments:${tournamentId}:groups`, JSON.stringify(groups));
+        client.set(`tournaments:${tournament.id}:groups`, JSON.stringify(groups));
         await sendEmail({
           senderAddress: "<TheGolfPool@9beec9a2-80be-49da-b674-99cf2949b2df.azurecomm.net>",
           content: {
