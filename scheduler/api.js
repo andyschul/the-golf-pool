@@ -1,11 +1,10 @@
 const redis = require('redis')
 const {promisify} = require('util');
-// const email = require('./email');
 const axios = require('axios');
 require('dotenv')
 const client = redis.createClient(process.env.REDIS_URL);
 const getAsync = promisify(client.get).bind(client);
-const email = require('./email');
+const { sendEmail } = require('./email');
 
 function groupPairings(pairings, groupNums) {
   let groupedPairings = [];
@@ -87,17 +86,21 @@ async function getTeeTimes(tournamentId) {
   }
   let currentYear = (new Date()).getFullYear();
   return axios.get(`${process.env.SPORTS_RADAR_URI}/teetimes/pga/${currentYear}/tournaments/${tournamentId}/rounds/1/teetimes.json?api_key=${process.env.SPORTS_RADAR_API_KEY}`)
-    .then(function (response) {
+    .then(async function (response) {
       if (response.data.round && response.data.round.courses.length) {
         let pairings = response.data.round.courses[0].pairings;
         let groups = groupPairings(pairings, 10);
         client.set(`tournaments:${tournamentId}:groups`, JSON.stringify(groups));
-        email.sendEmail({
-          from: 'thegolfpoolhost@gmail.com',
-          to: 'all',
-          subject: `Tee times for the ${response.data.name} have been posted!`,
-          text: `Visit https://thegolfpool.herokuapp.com/ to make your selections`
-        })
+        await sendEmail({
+          senderAddress: "<TheGolfPool@9beec9a2-80be-49da-b674-99cf2949b2df.azurecomm.net>",
+          content: {
+            subject: `Tee times for ${tournament.name} have been posted!`,
+            plainText: "Visit https://thegolfpool.azurewebsites.net to make your selections",
+          },
+          recipients: {
+            to: 'all',
+          },
+        });
         return groups;
       }
       return [];

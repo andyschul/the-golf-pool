@@ -2,7 +2,6 @@ require('dotenv').config({silent: process.env.NODE_ENV === 'production'});
 const schedule = require('node-schedule');
 const { DateTime } = require("luxon");
 const api = require('./api');
-const { sendEmail } = require('./email');
 const schedulers = [];
 
 const tzConversion = {
@@ -32,16 +31,6 @@ async function createSchedulers(year) {
     let teeTimeSchedule = schedule.scheduleJob({ start: teeTimesStartDate, end: tournamentStartDate, rule: teeTimeRule, tz: tz }, async function(){
       let teeTimes = await api.getTeeTimes(tournament.id);
       if (teeTimes.length) {
-        await sendEmail({
-          senderAddress: "<TheGolfPool@9beec9a2-80be-49da-b674-99cf2949b2df.azurecomm.net>",
-          content: {
-            subject: `Tee times for ${tournament.name} have been posted!`,
-            plainText: "Visit https://thegolfpool.azurewebsites.net to make your selections",
-          },
-          recipients: {
-            to: 'all',
-          },
-        });
         this.cancel();
       }
     });
